@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">272938015430-1o5g1p219et57gm4p9umhq3im0nb3149.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://poised-bot-443613-p6-default-rtdb.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">272938015430</string>
+    <string name="google_api_key" translatable="false">AIzaSyAFESLrf5Fsme5e9AQNktrC9I_V2o1PxIM</string>
+    <string name="google_app_id" translatable="false">1:272938015430:android:04fa8e016a7e75e9d7d5c7</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAFESLrf5Fsme5e9AQNktrC9I_V2o1PxIM</string>
+    <string name="google_storage_bucket" translatable="false">poised-bot-443613-p6.firebasestorage.app</string>
+    <string name="project_id" translatable="false">poised-bot-443613-p6</string>
+</resources>

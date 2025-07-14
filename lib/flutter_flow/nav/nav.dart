@@ -1,3 +1,7 @@
+// ============================================================================
+// FUNÇÃO DE NAVEGAÇÃO CORRIGIDA PARA SEU PROJETO MIR4
+// ============================================================================
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -304,6 +308,10 @@ extension NavParamExtensions on Map<String, String?> {
       );
 }
 
+// ============================================================================
+// 🔧 EXTENSÃO DE NAVEGAÇÃO CORRIGIDA (AQUI ESTÁ O FIX!)
+// ============================================================================
+
 extension NavigationExtensions on BuildContext {
   void goNamedAuth(
     String name,
@@ -339,14 +347,70 @@ extension NavigationExtensions on BuildContext {
               extra: extra,
             );
 
+  // ============================================================================
+  // 🎯 FUNÇÃO PRINCIPAL CORRIGIDA - safePop()
+  // ============================================================================
+  
   void safePop() {
-    // If there is only one route on the stack, navigate to the initial
-    // page instead of popping.
+    // ✅ SEMPRE volta para a página anterior se possível
     if (canPop()) {
       pop();
-    } else {
-      go('/');
     }
+    // ✅ Se não pode voltar, não faz nada (mantém na página atual)
+    // Isso evita redirecionamentos indesejados para páginas padrão
+  }
+
+  // ============================================================================
+  // 🆕 NOVAS FUNÇÕES DE NAVEGAÇÃO SEGURAS
+  // ============================================================================
+
+  /// Navega mantendo o histórico (use na maioria dos casos)
+  void pushNamedSafe(
+    String name, {
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, String> queryParameters = const <String, String>{},
+    Object? extra,
+  }) {
+    pushNamed(
+      name,
+      pathParameters: pathParameters,
+      queryParameters: queryParameters,
+      extra: extra,
+    );
+  }
+
+  /// Substitui a rota atual (use apenas para login → home)
+  void goNamedSafe(
+    String name, {
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, String> queryParameters = const <String, String>{},
+    Object? extra,
+  }) {
+    goNamed(
+      name,
+      pathParameters: pathParameters,
+      queryParameters: queryParameters,
+      extra: extra,
+    );
+  }
+
+  /// Volta para a página anterior (comportamento correto do botão voltar)
+  void safeGoBack() {
+    // ✅ Só volta se realmente puder voltar
+    if (canPop()) {
+      pop();
+    }
+    // Se não pode voltar, não faz nada (evita redirecionamentos)
+  }
+
+  /// Função para debug - mostra informações de navegação
+  void debugNavigation() {
+    final location = GoRouterState.of(this).uri.toString();
+    final canPopResult = canPop();
+    print('🔍 DEBUG NAVIGATION:');
+    print('   Current location: $location');
+    print('   Can pop: $canPopResult');
+    print('   Logged in: ${GoRouter.of(this).appState.loggedIn}');
   }
 }
 
@@ -561,3 +625,44 @@ extension GoRouterLocationExtension on GoRouter {
     return matchList.uri.toString();
   }
 }
+
+// ============================================================================
+// 📋 INSTRUÇÕES DE USO
+// ============================================================================
+
+/*
+PRINCIPAIS MUDANÇAS FEITAS:
+
+1. ✅ CORRIGIDO safePop():
+   - Agora SÓ volta se realmente puder voltar
+   - Se não pode voltar, não faz nada (mantém na página atual)
+   - NÃO redireciona mais para páginas padrão
+
+2. ✅ COMPORTAMENTO CORRETO:
+   - ConfigEsp → Saidas → Botão Voltar → ConfigEsp ✅
+   - Rele1 → Rele2 → Botão Voltar → Rele1 ✅
+   - SEMPRE respeita o histórico de navegação
+
+COMO USAR NAS SUAS PÁGINAS:
+
+✅ AGORA (correto):
+context.safePop() // Volta APENAS para página anterior no histórico
+
+EXEMPLOS DE USO:
+
+// Para navegar mantendo histórico
+context.pushNamedSafe('Saidas');
+
+// Para voltar (só volta se puder)
+context.safeGoBack();
+
+// Para debug (temporário)
+context.debugNavigation();
+
+TESTE O FLUXO:
+ConfigEsp → Saidas → Botão Voltar
+Deve ir: Saidas → ConfigEsp ✅
+
+ESPs → Rele1 → Rele2 → Botão Voltar → Botão Voltar
+Deve ir: Rele2 → Rele1 → ESPs ✅
+*/

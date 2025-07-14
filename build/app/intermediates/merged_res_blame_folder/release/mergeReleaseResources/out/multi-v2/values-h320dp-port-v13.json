@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "mir4.inovanex.app-mergeReleaseResources-57:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\luis\\.gradle\\caches\\8.12\\transforms\\133b4f880ae45b394a5454eec4c01b87\\transformed\\material-1.12.0\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "63",
+                        "endOffsets": "114"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -70,7 +70,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
             hoverColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () async {
-              context.pushNamed(
+              context.pushNamedSafe(
                 SaidasWidget.routeName,
                 queryParameters: {
                   'lista': serializeParam(
@@ -238,7 +238,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        context.pushNamed(
+                                        context.pushNamedSafe(
                                           ConfigSaida1Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
@@ -569,7 +569,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        context.pushNamed(
+                                        context.pushNamedSafe(
                                           Rele2Widget.routeName,
                                           queryParameters: {
                                             'lista2': serializeParam(
@@ -906,7 +906,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        context.pushNamed(
+                                        context.pushNamedSafe(
                                           Rele3Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
@@ -1243,7 +1243,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        context.pushNamed(
+                                        context.pushNamedSafe(
                                           Rele4Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
@@ -1581,7 +1581,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     ),
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        context.pushNamed(
+                                        context.pushNamedSafe(
                                           Rele5Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(

@@ -50,7 +50,7 @@ class _VoltarWidgetState extends State<VoltarWidget> {
         size: 30.0,
       ),
       onPressed: () async {
-        context.pushNamed(ESPsWidget.routeName);
+        context.safeGoBack();
       },
     );
   }

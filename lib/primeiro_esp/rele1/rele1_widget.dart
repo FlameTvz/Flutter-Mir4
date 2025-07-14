@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import 'package:mir4/flutter_flow/nav/nav.dart';
 import '/popups/mudarnome_um/mudarnome_um_widget.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';

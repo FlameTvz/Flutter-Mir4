@@ -1,340 +1,411 @@
+// ============================================================================
+// ARQUIVO: lib/eventos2/export_eventos_service.dart - VERSÃO FINAL CORRIGIDA
+// ============================================================================
+
+import 'dart:typed_data';
+import 'dart:io';
 import 'dart:convert';
-import 'dart:html' as html;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'evento_model.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExportEventosService {
-  static Future<void> exportarEventosParaJSON() async {
-    try {
-      // Buscar todos os eventos do Firestore
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .orderBy('timestamp', descending: false)
-          .get();
-
-      // Converter para lista de EventoModel
-      final List<EventoModel> eventos = snapshot.docs
-          .map((doc) => EventoModel.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-          .toList();
-
-      // Converter para JSON
-      final List<Map<String, dynamic>> eventosJson = eventos
-          .map((evento) => {
-                'id': evento.id,
-                'dispositivoId': evento.dispositivoId,
-                'estado': evento.estado,
-                'numeroRele': evento.numeroRele,
-                'origem': evento.origem,
-                'pinoEntrada': evento.pinoEntrada,
-                'timestamp': evento.timestamp,
-              })
-          .toList();
-
-      final String jsonString = const JsonEncoder.withIndent('  ').convert({
-        'eventos': eventosJson,
-        'totalEventos': eventos.length,
-        'exportadoEm': DateTime.now().toIso8601String(),
-      });
-
-      // Download do arquivo
-      _downloadFile(jsonString, 'eventos_export.json', 'application/json');
-    } catch (e) {
-      print('Erro ao exportar eventos: $e');
-      throw Exception('Erro ao exportar eventos: $e');
-    }
-  }
-
-  static Future<void> exportarEventosParaCSV() async {
-    try {
-      // Buscar todos os eventos do Firestore
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .orderBy('timestamp', descending: false)
-          .get();
-
-      // Converter para lista de EventoModel
-      final List<EventoModel> eventos = snapshot.docs
-          .map((doc) => EventoModel.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-          .toList();
-
-      // Criar CSV
-      final StringBuffer csv = StringBuffer();
-      
-      // Cabeçalho do CSV
-      csv.writeln('ID,Dispositivo ID,Estado,Numero Role,Origem,Pino Entrada,Timestamp');
-      
-      // Dados dos eventos
-      for (final evento in eventos) {
-        csv.writeln('${evento.id},${evento.dispositivoId},${evento.estado},${evento.numeroRele},${evento.origem},${evento.pinoEntrada},${evento.timestamp}');
-      }
-
-      // Download do arquivo
-      _downloadFile(csv.toString(), 'eventos_export.csv', 'text/csv');
-    } catch (e) {
-      print('Erro ao exportar eventos para CSV: $e');
-      throw Exception('Erro ao exportar eventos para CSV: $e');
-    }
-  }
-
-  static Future<void> exportarEventosPorPeriodo({
-    required DateTime dataInicio,
-    required DateTime dataFim,
-    required String formato, // 'json' ou 'csv'
-  }) async {
-    try {
-      // Buscar eventos por período
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .where('timestamp', isGreaterThanOrEqualTo: dataInicio.toIso8601String())
-          .where('timestamp', isLessThanOrEqualTo: dataFim.toIso8601String())
-          .orderBy('timestamp', descending: false)
-          .get();
-
-      final List<EventoModel> eventos = snapshot.docs
-          .map((doc) => EventoModel.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-          .toList();
-
-      if (eventos.isEmpty) {
-        throw Exception('Nenhum evento encontrado no período selecionado');
-      }
-
-      final String dataInicioStr = _formatarDataParaArquivo(dataInicio);
-      final String dataFimStr = _formatarDataParaArquivo(dataFim);
-
-      if (formato.toLowerCase() == 'json') {
-        final List<Map<String, dynamic>> eventosJson = eventos
-            .map((evento) => {
-                  'id': evento.id,
-                  'dispositivoId': evento.dispositivoId,
-                  'estado': evento.estado,
-                  'numeroRele': evento.numeroRele,
-                  'origem': evento.origem,
-                  'pinoEntrada': evento.pinoEntrada,
-                  'timestamp': evento.timestamp,
-                })
-            .toList();
-
-        final String jsonString = const JsonEncoder.withIndent('  ').convert({
-          'eventos': eventosJson,
-          'totalEventos': eventos.length,
-          'periodoInicio': dataInicio.toIso8601String(),
-          'periodoFim': dataFim.toIso8601String(),
-          'exportadoEm': DateTime.now().toIso8601String(),
-        });
-
-        _downloadFile(jsonString, 'eventos_${dataInicioStr}_${dataFimStr}.json', 'application/json');
-      } else {
-        final StringBuffer csv = StringBuffer();
-        csv.writeln('ID,Dispositivo ID,Estado,Numero Role,Origem,Pino Entrada,Timestamp');
-        
-        for (final evento in eventos) {
-          csv.writeln('${evento.id},${evento.dispositivoId},${evento.estado},${evento.numeroRele},${evento.origem},${evento.pinoEntrada},${evento.timestamp}');
-        }
-
-        _downloadFile(csv.toString(), 'eventos_${dataInicioStr}_${dataFimStr}.csv', 'text/csv');
-      }
-    } catch (e) {
-      print('Erro ao exportar eventos por período: $e');
-      throw Exception('Erro ao exportar eventos por período: $e');
-    }
-  }
-
-  static Future<void> exportarEventosPorDispositivo({
-    required String dispositivoId,
-    required String formato, // 'json' ou 'csv'
-  }) async {
-    try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .where('dispositivoId', isEqualTo: dispositivoId)
-          .orderBy('timestamp', descending: false)
-          .get();
-
-      final List<EventoModel> eventos = snapshot.docs
-          .map((doc) => EventoModel.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-          .toList();
-
-      if (eventos.isEmpty) {
-        throw Exception('Nenhum evento encontrado para o dispositivo $dispositivoId');
-      }
-
-      if (formato.toLowerCase() == 'json') {
-        final List<Map<String, dynamic>> eventosJson = eventos
-            .map((evento) => {
-                  'id': evento.id,
-                  'dispositivoId': evento.dispositivoId,
-                  'estado': evento.estado,
-                  'numeroRele': evento.numeroRele,
-                  'origem': evento.origem,
-                  'pinoEntrada': evento.pinoEntrada,
-                  'timestamp': evento.timestamp,
-                })
-            .toList();
-
-        final String jsonString = const JsonEncoder.withIndent('  ').convert({
-          'eventos': eventosJson,
-          'totalEventos': eventos.length,
-          'dispositivoId': dispositivoId,
-          'exportadoEm': DateTime.now().toIso8601String(),
-        });
-
-        _downloadFile(jsonString, 'eventos_dispositivo_${dispositivoId}.json', 'application/json');
-      } else {
-        final StringBuffer csv = StringBuffer();
-        csv.writeln('ID,Dispositivo ID,Estado,Numero Role,Origem,Pino Entrada,Timestamp');
-        
-        for (final evento in eventos) {
-          csv.writeln('${evento.id},${evento.dispositivoId},${evento.estado},${evento.numeroRele},${evento.origem},${evento.pinoEntrada},${evento.timestamp}');
-        }
-
-        _downloadFile(csv.toString(), 'eventos_dispositivo_${dispositivoId}.csv', 'text/csv');
-      }
-    } catch (e) {
-      print('Erro ao exportar eventos por dispositivo: $e');
-      throw Exception('Erro ao exportar eventos por dispositivo: $e');
-    }
-  }
-
+  
+  // ============================================================================
+  // MÉTODO PARA BUSCAR ESTATÍSTICAS DE EVENTOS
+  // ============================================================================
+  
   static Future<Map<String, dynamic>> getEstatisticasEventos() async {
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      final snapshot = await FirebaseFirestore.instance
           .collection('eventos')
           .get();
-
-      final List<EventoModel> eventos = snapshot.docs
-          .map((doc) => EventoModel.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-          .toList();
-
-      // Estatísticas gerais
-      final Map<String, int> estadoCount = {};
-      final Map<String, int> origemCount = {};
-      final Map<String, int> dispositivoCount = {};
-
-      for (final evento in eventos) {
-        // Contar por estado
-        estadoCount[evento.estado] = (estadoCount[evento.estado] ?? 0) + 1;
+      
+      final eventos = snapshot.docs;
+      final Map<String, int> eventosPorTipo = {};
+      final Map<String, int> eventosPorDispositivo = {};
+      
+      for (var doc in eventos) {
+        final data = doc.data();
+        final origem = data['origem']?.toString() ?? 'N/A';
+        final dispositivo = data['dispositivoId']?.toString() ?? 'N/A';
         
-        // Contar por origem
-        origemCount[evento.origem] = (origemCount[evento.origem] ?? 0) + 1;
-        
-        // Contar por dispositivo
-        dispositivoCount[evento.dispositivoId] = (dispositivoCount[evento.dispositivoId] ?? 0) + 1;
+        eventosPorTipo[origem] = (eventosPorTipo[origem] ?? 0) + 1;
+        eventosPorDispositivo[dispositivo] = (eventosPorDispositivo[dispositivo] ?? 0) + 1;
       }
-
-      // Evento mais recente - com tratamento de erro para datas
-      EventoModel? eventoMaisRecente;
-      if (eventos.isNotEmpty) {
-        try {
-          eventoMaisRecente = eventos.reduce((a, b) {
-            try {
-              final dateA = _parseTimestamp(a.timestamp);
-              final dateB = _parseTimestamp(b.timestamp);
-              return dateA.isAfter(dateB) ? a : b;
-            } catch (e) {
-              // Se não conseguir parsear as datas, retorna o primeiro
-              return a;
-            }
-          });
-        } catch (e) {
-          // Se der erro, pega o primeiro evento
-          eventoMaisRecente = eventos.first;
-        }
-      }
-
+      
       return {
         'totalEventos': eventos.length,
-        'eventosPorEstado': estadoCount,
-        'eventosPorOrigem': origemCount,
-        'eventosPorDispositivo': dispositivoCount,
-        'eventoMaisRecente': eventoMaisRecente?.toMap(),
-        'dispositivosUnicos': dispositivoCount.keys.length,
-        'origensUnicas': origemCount.keys.length,
-        'estadosUnicos': estadoCount.keys.length,
+        'eventosPorTipo': eventosPorTipo,
+        'eventosPorDispositivo': eventosPorDispositivo,
+        'eventosRecentes': eventos.take(10).map((doc) => {
+          'id': doc.id,
+          'timestamp': doc.data()['timestamp']?.toDate()?.toIso8601String(),
+          'dispositivo': doc.data()['dispositivoId'],
+          'estado': doc.data()['estado'],
+        }).toList(),
       };
     } catch (e) {
-      print('Erro ao obter estatísticas: $e');
-      throw Exception('Erro ao obter estatísticas: $e');
+      return {
+        'totalEventos': 0,
+        'eventosPorTipo': {},
+        'eventosPorDispositivo': {},
+        'eventosRecentes': [],
+      };
+    }
+  }
+  
+  // ============================================================================
+  // EXPORTAR EVENTOS PARA JSON
+  // ============================================================================
+  
+  static Future<void> exportarEventosParaJSON([List<dynamic>? eventos]) async {
+    try {
+      eventos ??= await _buscarEventos();
+      
+      final jsonString = jsonEncode({
+        'eventos': eventos,
+        'exportadoEm': DateTime.now().toIso8601String(),
+        'total': eventos.length,
+      });
+      
+      final bytes = Uint8List.fromList(utf8.encode(jsonString));
+      final fileName = 'eventos_${DateTime.now().millisecondsSinceEpoch}.json';
+      
+      await _exportFile(bytes, fileName, 'application/json');
+      
+    } catch (e) {
+      throw Exception('Erro ao exportar JSON: $e');
+    }
+  }
+  
+  // ============================================================================
+  // EXPORTAR EVENTOS PARA CSV
+  // ============================================================================
+  
+  static Future<void> exportarEventosParaCSV([List<dynamic>? eventos]) async {
+    try {
+      eventos ??= await _buscarEventos();
+      
+      String csvString = 'ID,Data,Tipo,Descricao,Dispositivo,NumeroRele,Estado,Origem,PinoEntrada\n';
+      
+      for (var evento in eventos) {
+        csvString += '${evento['id'] ?? ''},'
+                    '${evento['data'] ?? ''},'
+                    '${evento['tipo'] ?? ''},'
+                    '"${evento['descricao'] ?? ''}",'
+                    '${evento['dispositivo'] ?? ''},'
+                    '${evento['numeroRele'] ?? ''},'
+                    '${evento['estado'] ?? ''},'
+                    '${evento['origem'] ?? ''},'
+                    '${evento['pinoEntrada'] ?? ''}\n';
+      }
+      
+      final bytes = Uint8List.fromList(utf8.encode(csvString));
+      final fileName = 'eventos_${DateTime.now().millisecondsSinceEpoch}.csv';
+      
+      await _exportFile(bytes, fileName, 'text/csv');
+      
+    } catch (e) {
+      throw Exception('Erro ao exportar CSV: $e');
+    }
+  }
+  
+  // ============================================================================
+  // EXPORTAR EVENTOS POR PERÍODO
+  // ============================================================================
+  
+  static Future<void> exportarEventosPorPeriodo(
+    DateTime dataInicio,
+    DateTime dataFim, {
+    String formato = 'json',
+  }) async {
+    try {
+      final eventos = await _buscarEventosPorPeriodo(dataInicio, dataFim);
+      
+      if (formato.toLowerCase() == 'csv') {
+        await exportarEventosParaCSV(eventos);
+      } else {
+        await exportarEventosParaJSON(eventos);
+      }
+      
+    } catch (e) {
+      throw Exception('Erro ao exportar por período: $e');
+    }
+  }
+  
+  // ============================================================================
+  // EXPORTAR EVENTOS POR DISPOSITIVO (CORRIGIDO)
+  // ============================================================================
+  
+  static Future<void> exportarEventosPorDispositivo(
+    String dispositivoId, {
+    String formato = 'json',
+  }) async {
+    try {
+      final eventos = await _buscarEventosPorDispositivo(dispositivoId);
+      
+      if (formato.toLowerCase() == 'csv') {
+        await exportarEventosParaCSV(eventos);
+      } else {
+        await exportarEventosParaJSON(eventos);
+      }
+      
+    } catch (e) {
+      throw Exception('Erro ao exportar por dispositivo: $e');
     }
   }
 
-  // Função auxiliar para parsear timestamp com diferentes formatos
-  static DateTime _parseTimestamp(String timestamp) {
-    if (timestamp.isEmpty) return DateTime.now();
-    
+  // ============================================================================
+  // BUSCAR TODOS OS EVENTOS DO FIRESTORE
+  // ============================================================================
+  
+  static Future<List<dynamic>> _buscarEventos() async {
     try {
-      // Tenta formato ISO primeiro
-      return DateTime.parse(timestamp);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('eventos')
+          .orderBy('timestamp', descending: true)
+          .get();
+      
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
+                 DateTime.now().toIso8601String(),
+          'tipo': data['origem'] ?? 'N/A',
+          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
+          'dispositivo': data['dispositivoId'] ?? 'N/A',
+          'numeroRele': data['numeroRele'] ?? 0,
+          'estado': data['estado'] ?? 'N/A',
+          'origem': data['origem'] ?? 'N/A',
+          'pinoEntrada': data['pinoEntrada'] ?? -1,
+        };
+      }).toList();
     } catch (e) {
+      print('Erro ao buscar eventos: $e');
+      return [];
+    }
+  }
+  
+  // ============================================================================
+  // BUSCAR EVENTOS POR PERÍODO
+  // ============================================================================
+  
+  static Future<List<dynamic>> _buscarEventosPorPeriodo(
+    DateTime inicio, 
+    DateTime fim,
+  ) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('eventos')
+          .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(inicio))
+          .where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(fim))
+          .orderBy('timestamp', descending: true)
+          .get();
+      
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
+                 DateTime.now().toIso8601String(),
+          'tipo': data['origem'] ?? 'N/A',
+          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
+          'dispositivo': data['dispositivoId'] ?? 'N/A',
+          'numeroRele': data['numeroRele'] ?? 0,
+          'estado': data['estado'] ?? 'N/A',
+          'origem': data['origem'] ?? 'N/A',
+          'pinoEntrada': data['pinoEntrada'] ?? -1,
+        };
+      }).toList();
+    } catch (e) {
+      print('Erro ao buscar eventos por período: $e');
+      return [];
+    }
+  }
+  
+  // ============================================================================
+  // BUSCAR EVENTOS POR DISPOSITIVO
+  // ============================================================================
+  
+  static Future<List<dynamic>> _buscarEventosPorDispositivo(String dispositivoId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('eventos')
+          .where('dispositivoId', isEqualTo: dispositivoId)
+          .orderBy('timestamp', descending: true)
+          .get();
+      
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
+                 DateTime.now().toIso8601String(),
+          'tipo': data['origem'] ?? 'N/A',
+          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
+          'dispositivo': data['dispositivoId'] ?? 'N/A',
+          'numeroRele': data['numeroRele'] ?? 0,
+          'estado': data['estado'] ?? 'N/A',
+          'origem': data['origem'] ?? 'N/A',
+          'pinoEntrada': data['pinoEntrada'] ?? -1,
+        };
+      }).toList();
+    } catch (e) {
+      print('Erro ao buscar eventos por dispositivo: $e');
+      return [];
+    }
+  }
+
+  // ============================================================================
+  // MÉTODO PRINCIPAL PARA EXPORTAR ARQUIVOS
+  // ============================================================================
+  
+  static Future<void> _exportFile(
+    Uint8List bytes,
+    String fileName,
+    String mimeType,
+  ) async {
+    try {
+      if (kIsWeb) {
+        await _exportForWebAlternative(bytes, fileName, mimeType);
+      } else {
+        await _exportForMobile(bytes, fileName, mimeType);
+      }
+    } catch (e) {
+      throw Exception('Erro ao exportar arquivo: $e');
+    }
+  }
+
+  // ============================================================================
+  // MÉTODO PARA WEB (sem dart:html)
+  // ============================================================================
+  
+  static Future<void> _exportForWebAlternative(
+    Uint8List bytes, 
+    String fileName, 
+    String mimeType,
+  ) async {
+    if (kIsWeb) {
       try {
-        // Tenta formato brasileiro DD/MM/YYYY HH:MM:SS
-        if (timestamp.contains('/')) {
-          final parts = timestamp.split(' ');
-          if (parts.length >= 2) {
-            final dateParts = parts[0].split('/');
-            final timeParts = parts[1].split(':');
-            
-            if (dateParts.length == 3 && timeParts.length >= 2) {
-              final day = int.parse(dateParts[0]);
-              final month = int.parse(dateParts[1]);
-              final year = int.parse(dateParts[2]);
-              final hour = int.parse(timeParts[0]);
-              final minute = int.parse(timeParts[1]);
-              final second = timeParts.length > 2 ? int.parse(timeParts[2]) : 0;
-              
-              return DateTime(year, month, day, hour, minute, second);
-            }
-          }
-        }
+        final tempDir = await getTemporaryDirectory();
+        final filePath = '${tempDir.path}/$fileName';
+        final file = File(filePath);
+        await file.writeAsBytes(bytes);
+
+        await Share.shareXFiles(
+          [XFile(filePath)],
+          text: 'Exportando $fileName',
+        );
         
-        // Tenta formato YYYY-MM-DD HH:MM
-        if (timestamp.contains('-') && timestamp.contains(':')) {
-          final parts = timestamp.split(' ');
-          if (parts.length >= 2) {
-            final dateParts = parts[0].split('-');
-            final timeParts = parts[1].split(':');
-            
-            if (dateParts.length == 3 && timeParts.length >= 2) {
-              final year = int.parse(dateParts[0]);
-              final month = int.parse(dateParts[1]);
-              final day = int.parse(dateParts[2]);
-              final hour = int.parse(timeParts[0]);
-              final minute = int.parse(timeParts[1]);
-              
-              return DateTime(year, month, day, hour, minute);
-            }
-          }
-        }
-        
-        // Se não conseguir parsear, retorna data atual
-        return DateTime.now();
       } catch (e) {
-        return DateTime.now();
+        print('Exportação na web não disponível: $e');
+        throw Exception('Exportação na web não disponível no momento');
       }
     }
   }
 
-  static String _formatarDataParaArquivo(DateTime data) {
-    return '${data.year}-${data.month.toString().padLeft(2, '0')}-${data.day.toString().padLeft(2, '0')}';
+  // ============================================================================
+  // MÉTODO PARA MOBILE (Android/iOS)
+  // ============================================================================
+  
+  static Future<void> _exportForMobile(
+    Uint8List bytes, 
+    String fileName, 
+    String mimeType,
+  ) async {
+    try {
+      // 1. Solicitar permissão (Android)
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          status = await Permission.storage.request();
+          if (!status.isGranted) {
+            print('Permissão negada, tentando compartilhar mesmo assim...');
+          }
+        }
+      }
+
+      // 2. Criar arquivo temporário
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/$fileName';
+      final file = File(filePath);
+      await file.writeAsBytes(bytes);
+
+      // 3. Compartilhar arquivo
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        text: 'Exportando $fileName',
+        subject: fileName,
+      );
+
+      // 4. Limpar arquivo temporário após 5 minutos
+      Future.delayed(Duration(minutes: 5), () {
+        try {
+          if (file.existsSync()) {
+            file.deleteSync();
+          }
+        } catch (e) {
+          // Ignorar erros de limpeza
+        }
+      });
+
+    } catch (e) {
+      throw Exception('Erro ao exportar para mobile: $e');
+    }
   }
 
-  static void _downloadFile(String content, String filename, String mimeType) {
-    if (kIsWeb) {
-      // Para web
-      final bytes = utf8.encode(content);
-      final blob = html.Blob([bytes]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = filename;
-      html.document.body!.children.add(anchor);
-      anchor.click();
-      html.document.body!.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    } else {
-      // Para mobile/desktop seria necessário usar path_provider e outras dependências
-      print('Download não suportado nesta plataforma');
+  // ============================================================================
+  // MÉTODO PÚBLICO GENÉRICO PARA EXPORTAR DADOS
+  // ============================================================================
+  
+  static Future<void> exportData({
+    required Uint8List bytes,
+    required String fileName,
+    String mimeType = 'application/octet-stream',
+  }) async {
+    await _exportFile(bytes, fileName, mimeType);
+  }
+
+  // ============================================================================
+  // MÉTODO PARA SALVAR DIRETAMENTE NO DOWNLOADS (Android)
+  // ============================================================================
+  
+  static Future<void> saveToDownloads({
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    if (!Platform.isAndroid) {
+      throw Exception('Este método só funciona no Android');
+    }
+
+    try {
+      // Solicitar permissão
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        status = await Permission.storage.request();
+        if (!status.isGranted) {
+          throw Exception('Permissão de armazenamento negada');
+        }
+      }
+
+      // Salvar no Downloads
+      final downloadsDir = Directory('/storage/emulated/0/Download');
+      if (!downloadsDir.existsSync()) {
+        downloadsDir.createSync(recursive: true);
+      }
+
+      final filePath = '${downloadsDir.path}/$fileName';
+      final file = File(filePath);
+      await file.writeAsBytes(bytes);
+
+      print('✅ Arquivo salvo em: $filePath');
+      
+    } catch (e) {
+      throw Exception('Erro ao salvar no Downloads: $e');
     }
   }
 }

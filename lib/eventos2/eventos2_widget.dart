@@ -1,4 +1,5 @@
 import 'package:mir4/eventos2/export_eventos_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -41,6 +42,19 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
     _model.dispose();
     _unfocusNode.dispose();
     super.dispose();
+  }
+
+  // ============================================================================
+  // 🔧 FUNÇÃO PARA MOSTRAR DIÁLOGO DE EXPORTAÇÃO (ADICIONADA)
+  // ============================================================================
+  
+  void mostrarDialogoExportacao(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ExportDialogWidget();
+      },
+    );
   }
 
   @override
@@ -229,20 +243,36 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
   void _limparEventosAntigos() async {
     try {
       final DateTime dataLimite = DateTime.now().subtract(const Duration(days: 30));
-      // Implementar limpeza de eventos antigos
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Eventos antigos removidos com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      
+      // Buscar e deletar eventos antigos
+      final snapshot = await FirebaseFirestore.instance
+          .collection('eventos')
+          .where('timestamp', isLessThan: Timestamp.fromDate(dataLimite))
+          .get();
+      
+      final batch = FirebaseFirestore.instance.batch();
+      for (var doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${snapshot.docs.length} eventos antigos removidos com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao limpar eventos: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao limpar eventos: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -275,20 +305,35 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
 
   Future<void> _limparTodosEventos() async {
     try {
-      // Implementar limpeza total
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Todos os eventos foram removidos!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      // Buscar todos os eventos
+      final snapshot = await FirebaseFirestore.instance
+          .collection('eventos')
+          .get();
+      
+      // Deletar em batch
+      final batch = FirebaseFirestore.instance.batch();
+      for (var doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${snapshot.docs.length} eventos foram removidos!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao limpar eventos: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao limpar eventos: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -350,26 +395,16 @@ class EstatisticasDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildStatCard('Total de Eventos', stats['totalEventos'].toString()),
-                  _buildStatCard('Dispositivos Únicos', stats['dispositivosUnicos'].toString()),
-                  _buildStatCard('Origens Únicas', stats['origensUnicas'].toString()),
+                  _buildStatCard('Dispositivos Únicos', (stats['eventosPorDispositivo'] as Map).length.toString()),
+                  _buildStatCard('Origens Únicas', (stats['eventosPorTipo'] as Map).length.toString()),
                   const SizedBox(height: 16),
                   
                   Text(
-                    'Eventos por Estado:',
+                    'Eventos por Tipo:',
                     style: FlutterFlowTheme.of(context).titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...((stats['eventosPorEstado'] as Map<String, int>).entries.map(
-                    (entry) => _buildStatItem(entry.key, entry.value.toString()),
-                  )),
-                  const SizedBox(height: 16),
-                  
-                  Text(
-                    'Eventos por Origem:',
-                    style: FlutterFlowTheme.of(context).titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  ...((stats['eventosPorOrigem'] as Map<String, int>).entries.map(
+                  ...((stats['eventosPorTipo'] as Map<String, dynamic>).entries.map(
                     (entry) => _buildStatItem(entry.key, entry.value.toString()),
                   )),
                   const SizedBox(height: 16),
@@ -379,7 +414,7 @@ class EstatisticasDialog extends StatelessWidget {
                     style: FlutterFlowTheme.of(context).titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...((stats['eventosPorDispositivo'] as Map<String, int>)
+                  ...((stats['eventosPorDispositivo'] as Map<String, dynamic>)
                       .entries
                       .toList()
                       ..sort((a, b) => b.value.compareTo(a.value)))
@@ -508,7 +543,7 @@ class _AdicionarEventoDialogState extends State<AdicionarEventoDialog> {
               TextFormField(
                 controller: _numeroReleController,
                 decoration: const InputDecoration(
-                  labelText: 'Número Role',
+                  labelText: 'Número Relé',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -602,27 +637,31 @@ class _AdicionarEventoDialogState extends State<AdicionarEventoDialog> {
           'numeroRele': int.parse(_numeroReleController.text),
           'origem': _origemSelecionada,
           'pinoEntrada': int.parse(_pinoEntradaController.text),
-          'timestamp': DateTime.now().toIso8601String(),
+          'timestamp': Timestamp.now(),
         };
 
         await FirebaseFirestore.instance
             .collection('eventos')
             .add(evento);
 
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Evento adicionado com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Evento adicionado com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao adicionar evento: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao adicionar evento: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
