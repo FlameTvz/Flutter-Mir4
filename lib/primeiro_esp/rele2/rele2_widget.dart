@@ -137,7 +137,7 @@ class _Rele2WidgetState extends State<Rele2Widget> {
                                         ?.unfocus();
                                   },
                                   child: MudarnomeDoisWidget(
-                                    lista: widget!.lista2!,
+                                    lista: widget.lista2!,
                                   ),
                                 ),
                               );
@@ -210,7 +210,7 @@ class _Rele2WidgetState extends State<Rele2Widget> {
                                   child: FFButtonWidget(
                                     onPressed: () async {
                                       FFAppState().isRelOn2 =
-                                          !(FFAppState().isRelOn2 ?? true);
+                                          !(FFAppState().isRelOn2);
                                       safeSetState(() {});
                                       if (FFAppState().isRelOn2 == true) {
                                         await ReleTwoGroup.releOnCopyCall.call(

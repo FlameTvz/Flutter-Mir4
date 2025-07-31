@@ -90,9 +90,7 @@ String? serializeParam(
         final reference = (param as FirestoreRecord).reference;
         data = _serializeDocumentReference(reference);
 
-      default:
-        data = null;
-    }
+      }
     return data;
   } catch (e) {
     print('Error serializing parameter: $e');

@@ -78,7 +78,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                 SaidasWidget.routeName,
                 queryParameters: {
                   'lista': serializeParam(
-                    widget!.lista,
+                    widget.lista,
                     ParamType.JSON,
                   ),
                 }.withoutNulls,
@@ -172,7 +172,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           );
 
                                           FFAppState().isReleOn1 =
-                                              !(FFAppState().isReleOn1 ?? true);
+                                              !(FFAppState().isReleOn1);
                                           FFAppState().qualRele = 1;
                                           safeSetState(() {});
                                           if (FFAppState().isReleOn1 == true) {
@@ -246,7 +246,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           ConfigSaida1Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
-                                              widget!.lista,
+                                              widget.lista,
                                               ParamType.JSON,
                                             ),
                                           }.withoutNulls,
@@ -504,7 +504,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                       child: FFButtonWidget(
                                         onPressed: () async {
                                           FFAppState().isRelOn2 =
-                                              !(FFAppState().isRelOn2 ?? true);
+                                              !(FFAppState().isRelOn2);
                                           safeSetState(() {});
                                           if (FFAppState().isRelOn2 == true) {
                                             await ReleTwoGroup.releOnCopyCall
@@ -577,7 +577,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           ConfigSaida2Widget.routeName,
                                           queryParameters: {
                                             'lista2': serializeParam(
-                                              widget!.lista,
+                                              widget.lista,
                                               ParamType.JSON,
                                             ),
                                           }.withoutNulls,
@@ -838,7 +838,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                       child: FFButtonWidget(
                                         onPressed: () async {
                                           FFAppState().isReleOn3 =
-                                              !(FFAppState().isReleOn3 ?? true);
+                                              !(FFAppState().isReleOn3);
                                           safeSetState(() {});
                                           if (FFAppState().isReleOn3 == true) {
                                             await ReleThreeGroup
@@ -914,7 +914,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           ConfigSaida3Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
-                                              widget!.lista,
+                                              widget.lista,
                                               ParamType.JSON,
                                             ),
                                           }.withoutNulls,
@@ -1175,7 +1175,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                       child: FFButtonWidget(
                                         onPressed: () async {
                                           FFAppState().isRele4 =
-                                              !(FFAppState().isRele4 ?? true);
+                                              !(FFAppState().isRele4);
                                           safeSetState(() {});
                                           if (FFAppState().isRele4 == true) {
                                             await ReleFourGroup
@@ -1251,7 +1251,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           ConfigSaida4Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
-                                              widget!.lista,
+                                              widget.lista,
                                               ParamType.JSON,
                                             ),
                                           }.withoutNulls,
@@ -1513,7 +1513,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                       child: FFButtonWidget(
                                         onPressed: () async {
                                           FFAppState().isRele5 =
-                                              !(FFAppState().isRele5 ?? true);
+                                              !(FFAppState().isRele5);
                                           safeSetState(() {});
                                           if (FFAppState().isRele5 == true) {
                                             await ReleFiveGroup
@@ -1589,7 +1589,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                           ConfigSaida5Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
-                                              widget!.lista,
+                                              widget.lista,
                                               ParamType.JSON,
                                             ),
                                           }.withoutNulls,

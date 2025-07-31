@@ -239,7 +239,7 @@ class _MudarnomeDoisCopyWidgetState extends State<MudarnomeDoisCopyWidget> {
                         nomeRele2: _model.textController.text,
                         token: currentJwtToken,
                         idesp: getJsonField(
-                          widget!.lista,
+                          widget.lista,
                           r'''$.id''',
                         ).toString(),
                       );

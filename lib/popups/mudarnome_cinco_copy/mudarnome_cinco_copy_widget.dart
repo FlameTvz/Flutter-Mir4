@@ -238,7 +238,7 @@ class _MudarnomeCincoCopyWidgetState extends State<MudarnomeCincoCopyWidget> {
                           await ReleFiveGroup.mudarnomeReleCall.call(
                         nomeRele: _model.textController.text,
                         idesp: getJsonField(
-                          widget!.lista,
+                          widget.lista,
                           r'''$.id''',
                         ).toString(),
                         token: currentJwtToken,

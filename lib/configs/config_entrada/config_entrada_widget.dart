@@ -601,7 +601,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 1 / SAÍDA 1 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada10 = !(FFAppState().entrada10 ?? true);
+                                          FFAppState().entrada10 = !(FFAppState().entrada10);
                                           safeSetState(() {});
                                           if (FFAppState().entrada10 == true) {
                                             await EntradasZeroGroup
@@ -673,7 +673,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 1 / SAÍDA 2 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada11 = !(FFAppState().entrada11 ?? true);
+                                          FFAppState().entrada11 = !(FFAppState().entrada11);
                                           safeSetState(() {});
                                           if (FFAppState().entrada11 == true) {
                                             await EntradasZeroGroup
@@ -745,7 +745,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 1 / SAÍDA 3 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada12 = !(FFAppState().entrada12 ?? true);
+                                          FFAppState().entrada12 = !(FFAppState().entrada12);
                                           safeSetState(() {});
                                           if (FFAppState().entrada12 == true) {
                                             await EntradasZeroGroup
@@ -817,7 +817,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 1 / SAÍDA 4 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada13 = !(FFAppState().entrada13 ?? true);
+                                          FFAppState().entrada13 = !(FFAppState().entrada13);
                                           safeSetState(() {});
                                           if (FFAppState().entrada13 == true) {
                                             await EntradasZeroGroup
@@ -889,7 +889,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 1 / SAÍDA 5 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada14 = !(FFAppState().entrada14 ?? true);
+                                          FFAppState().entrada14 = !(FFAppState().entrada14);
                                           safeSetState(() {});
                                           if (FFAppState().entrada14 == true) {
                                             await EntradasZeroGroup
@@ -1404,7 +1404,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 2 / SAÍDA 1 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada20 = !(FFAppState().entrada20 ?? true);
+                                          FFAppState().entrada20 = !(FFAppState().entrada20);
                                           safeSetState(() {});
                                           if (FFAppState().entrada20 == true) {
                                             await EntradasUmGroup
@@ -1476,7 +1476,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 2 / SAÍDA 2 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada21 = !(FFAppState().entrada21 ?? true);
+                                          FFAppState().entrada21 = !(FFAppState().entrada21);
                                           safeSetState(() {});
                                           if (FFAppState().entrada21 == true) {
                                             await EntradasUmGroup
@@ -1548,7 +1548,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 2 / SAÍDA 3 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada22 = !(FFAppState().entrada22 ?? true);
+                                          FFAppState().entrada22 = !(FFAppState().entrada22);
                                           safeSetState(() {});
                                           if (FFAppState().entrada22 == true) {
                                             await EntradasUmGroup
@@ -1620,7 +1620,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 2 / SAÍDA 4 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada23 = !(FFAppState().entrada23 ?? true);
+                                          FFAppState().entrada23 = !(FFAppState().entrada23);
                                           safeSetState(() {});
                                           if (FFAppState().entrada23 == true) {
                                             await EntradasUmGroup
@@ -1692,7 +1692,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 2 / SAÍDA 5 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada24 = !(FFAppState().entrada24 ?? true);
+                                          FFAppState().entrada24 = !(FFAppState().entrada24);
                                           safeSetState(() {});
                                           if (FFAppState().entrada24 == true) {
                                             await EntradasUmGroup
@@ -2201,7 +2201,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 3 / SAÍDA 1 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada30 = !(FFAppState().entrada30 ?? true);
+                                          FFAppState().entrada30 = !(FFAppState().entrada30);
                                           safeSetState(() {});
                                           if (FFAppState().entrada30 == true) {
                                             await EntradasDoisGroup
@@ -2273,7 +2273,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 3 / SAÍDA 2 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada31 = !(FFAppState().entrada31 ?? true);
+                                          FFAppState().entrada31 = !(FFAppState().entrada31);
                                           safeSetState(() {});
                                           if (FFAppState().entrada31 == true) {
                                             await EntradasDoisGroup
@@ -2345,7 +2345,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 3 / SAÍDA 3 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada32 = !(FFAppState().entrada32 ?? true);
+                                          FFAppState().entrada32 = !(FFAppState().entrada32);
                                           safeSetState(() {});
                                           if (FFAppState().entrada32 == true) {
                                             await EntradasDoisGroup
@@ -2417,7 +2417,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 3 / SAÍDA 4 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada33 = !(FFAppState().entrada33 ?? true);
+                                          FFAppState().entrada33 = !(FFAppState().entrada33);
                                           safeSetState(() {});
                                           if (FFAppState().entrada33 == true) {
                                             await EntradasDoisGroup
@@ -2489,7 +2489,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 3 / SAÍDA 5 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada34 = !(FFAppState().entrada34 ?? true);
+                                          FFAppState().entrada34 = !(FFAppState().entrada34);
                                           safeSetState(() {});
                                           if (FFAppState().entrada34 == true) {
                                             await EntradasDoisGroup
@@ -3013,7 +3013,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 4 / SAÍDA 1 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada40 = !(FFAppState().entrada40 ?? true);
+                                          FFAppState().entrada40 = !(FFAppState().entrada40);
                                           safeSetState(() {});
                                           if (FFAppState().entrada40 == true) {
                                             await EntradasTresGroup
@@ -3085,7 +3085,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 4 / SAÍDA 2 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada41 = !(FFAppState().entrada41 ?? true);
+                                          var bool = FFAppState().entrada41 = !(FFAppState().entrada41);
                                           safeSetState(() {});
                                           if (FFAppState().entrada41 == true) {
                                             await EntradasTresGroup
@@ -3157,7 +3157,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 4 / SAÍDA 3 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada42 = !(FFAppState().entrada42 ?? true);
+                                          FFAppState().entrada42 = !(FFAppState().entrada42);
                                           safeSetState(() {});
                                           if (FFAppState().entrada42 == true) {
                                             await EntradasTresGroup
@@ -3229,7 +3229,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 4 / SAÍDA 4 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada43 = !(FFAppState().entrada43 ?? true);
+                                          FFAppState().entrada43 = !(FFAppState().entrada43);
                                           safeSetState(() {});
                                           if (FFAppState().entrada43 == true) {
                                             await EntradasTresGroup
@@ -3301,7 +3301,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 4 / SAÍDA 5 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada44 = !(FFAppState().entrada44 ?? true);
+                                          var bool = FFAppState().entrada44 = !(FFAppState().entrada44);
                                           safeSetState(() {});
                                           if (FFAppState().entrada44 == true) {
                                             await EntradasTresGroup
@@ -3825,7 +3825,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 5 / SAÍDA 1 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada0On = !(FFAppState().entrada0On ?? true);
+                                          FFAppState().entrada0On = !(FFAppState().entrada0On);
                                           safeSetState(() {});
                                           if (FFAppState().entrada0On == true) {
                                             await EntradasQuatroGroup
@@ -3897,7 +3897,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 5 / SAÍDA 2 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada1on = !(FFAppState().entrada1on ?? true);
+                                          FFAppState().entrada1on = !(FFAppState().entrada1on);
                                           safeSetState(() {});
                                           if (FFAppState().entrada1on == true) {
                                             await EntradasQuatroGroup
@@ -3969,7 +3969,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 5 / SAÍDA 3 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada2on = !(FFAppState().entrada2on ?? true);
+                                          FFAppState().entrada2on = !(FFAppState().entrada2on);
                                           safeSetState(() {});
                                           if (FFAppState().entrada2on == true) {
                                             await EntradasQuatroGroup
@@ -4041,7 +4041,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 5 / SAÍDA 4 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada3on = !(FFAppState().entrada3on ?? true);
+                                          FFAppState().entrada3on = !(FFAppState().entrada3on);
                                           safeSetState(() {});
                                           if (FFAppState().entrada3on == true) {
                                             await EntradasQuatroGroup
@@ -4113,7 +4113,7 @@ class _ConfigEntradaWidgetState extends State<ConfigEntradaWidget> {
                                       // --- INÍCIO DA CORREÇÃO: ENTRADA 5 / SAÍDA 5 ---
                                       FFButtonWidget(
                                         onPressed: () async {
-                                          FFAppState().entrada4on = !(FFAppState().entrada4on ?? true);
+                                          FFAppState().entrada4on = !(FFAppState().entrada4on);
                                           safeSetState(() {});
                                           if (FFAppState().entrada4on == true) {
                                             await EntradasQuatroGroup

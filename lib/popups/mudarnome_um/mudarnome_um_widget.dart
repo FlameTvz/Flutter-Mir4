@@ -238,7 +238,7 @@ class _MudarnomeUmWidgetState extends State<MudarnomeUmWidget> {
                         nomeRele: _model.textController.text,
                         token: currentJwtToken,
                         idesp: getJsonField(
-                          widget!.lista,
+                          widget.lista,
                           r'''$.id''',
                         ).toString(),
                       );

@@ -160,11 +160,11 @@ class _DeleteControleWidgetState extends State<DeleteControleWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () async {
-                          FFAppState().removeFromListaDeESPS(widget!.esp!);
+                          FFAppState().removeFromListaDeESPS(widget.esp!);
                           FFAppState().update(() {});
                           await DeletarESPCall.call(
                             userId: currentUserUid,
-                            idesp: widget!.idDoESP,
+                            idesp: widget.idDoESP,
                             token: currentJwtToken,
                           );
 

@@ -253,7 +253,7 @@ class _AddespsWidgetState extends State<AddespsWidget> {
                       );
 
                       if (_model.idDoEspQR != '-1') {
-                        FFAppState().ScanId = _model.idDoEspQR!;
+                        FFAppState().ScanId = _model.idDoEspQR;
                         safeSetState(() {});
                         if (functions.verificarESPJaExiste(
                             getJsonField(

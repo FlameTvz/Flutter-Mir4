@@ -238,7 +238,7 @@ class _MudarnomeTresCopyWidgetState extends State<MudarnomeTresCopyWidget> {
                           await ReleThreeGroup.mudarNomeCall.call(
                         nomeRele: _model.textController.text,
                         idesp: getJsonField(
-                          widget!.lista,
+                          widget.lista,
                           r'''$.id''',
                         ).toString(),
                         token: currentJwtToken,

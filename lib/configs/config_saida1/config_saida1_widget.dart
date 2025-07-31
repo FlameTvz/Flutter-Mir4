@@ -152,7 +152,7 @@ class _ConfigSaida1WidgetState extends State<ConfigSaida1Widget> {
                                                   ?.unfocus();
                                             },
                                             child: MudarnomeUmWidget(
-                                              lista: widget!.lista!,
+                                              lista: widget.lista!,
                                             ),
                                           ),
                                         );

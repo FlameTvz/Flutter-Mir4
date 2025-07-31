@@ -272,7 +272,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             FFAppState().segunda =
-                                !(FFAppState().segunda ?? true);
+                                !(FFAppState().segunda);
                             safeSetState(() {});
                           },
                           text: 'Seg',
@@ -317,7 +317,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         ),
                         FFButtonWidget(
                           onPressed: () async {
-                            FFAppState().terca = !(FFAppState().terca ?? true);
+                            FFAppState().terca = !(FFAppState().terca);
                             safeSetState(() {});
                           },
                           text: 'Ter',
@@ -362,7 +362,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             FFAppState().quarta =
-                                !(FFAppState().quarta ?? true);
+                                !(FFAppState().quarta);
                             safeSetState(() {});
                           },
                           text: 'Qua',
@@ -408,7 +408,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             FFAppState().quinta =
-                                !(FFAppState().quinta ?? true);
+                                !(FFAppState().quinta);
                             safeSetState(() {});
                           },
                           text: 'Qui',
@@ -452,7 +452,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         ),
                         FFButtonWidget(
                           onPressed: () async {
-                            FFAppState().sexta = !(FFAppState().sexta ?? true);
+                            FFAppState().sexta = !(FFAppState().sexta);
                             safeSetState(() {});
                           },
                           text: 'Sex',
@@ -498,7 +498,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             FFAppState().sabado =
-                                !(FFAppState().sabado ?? true);
+                                !(FFAppState().sabado);
                             safeSetState(() {});
                           },
                           text: 'Sab',
@@ -543,7 +543,7 @@ class _ProgHorariosWidgetState extends State<ProgHorariosWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             FFAppState().domingo =
-                                !(FFAppState().domingo ?? true);
+                                !(FFAppState().domingo);
                             safeSetState(() {});
                           },
                           text: 'Dom',

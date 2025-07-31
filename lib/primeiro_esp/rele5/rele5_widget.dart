@@ -147,7 +147,7 @@ class _Rele5WidgetState extends State<Rele5Widget> {
                                         ?.unfocus();
                                   },
                                   child: MudarnomeCincoWidget(
-                                    lista: widget!.lista!,
+                                    lista: widget.lista!,
                                   ),
                                 ),
                               );
@@ -220,7 +220,7 @@ class _Rele5WidgetState extends State<Rele5Widget> {
                                   child: FFButtonWidget(
                                     onPressed: () async {
                                       FFAppState().isRele5 =
-                                          !(FFAppState().isRele5 ?? true);
+                                          !(FFAppState().isRele5);
                                       safeSetState(() {});
                                       if (FFAppState().isRele5 == true) {
                                         await ReleFiveGroup

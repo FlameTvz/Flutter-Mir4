@@ -230,7 +230,7 @@ class _AddespWidgetState extends State<AddespWidget> {
                       'id': _model.idDoEspQR,
                       'nome': _model.textController.text,
                     });
-                    FFAppState().ScanId = _model.idDoEspQR!;
+                    FFAppState().ScanId = _model.idDoEspQR;
                     FFAppState().update(() {});
                     _model.apiResultupn = await VincularESPCall.call(
                       idesp: FFAppState().ScanId,

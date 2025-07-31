@@ -238,7 +238,7 @@ class _MudarnomeQuatroCopyWidgetState extends State<MudarnomeQuatroCopyWidget> {
                           await ReleFourGroup.mudaNomeReleCall.call(
                         nomeRele: _model.textController.text,
                         idesp: getJsonField(
-                          widget!.lista,
+                          widget.lista,
                           r'''$.id''',
                         ).toString(),
                         token: currentJwtToken,

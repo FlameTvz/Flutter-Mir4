@@ -138,7 +138,7 @@ class _Rele3WidgetState extends State<Rele3Widget> {
                                         ?.unfocus();
                                   },
                                   child: MudarnomeTresWidget(
-                                    lista: widget!.lista!,
+                                    lista: widget.lista!,
                                   ),
                                 ),
                               );
@@ -212,7 +212,7 @@ class _Rele3WidgetState extends State<Rele3Widget> {
                                   child: FFButtonWidget(
                                     onPressed: () async {
                                       FFAppState().isReleOn3 =
-                                          !(FFAppState().isReleOn3 ?? true);
+                                          !(FFAppState().isReleOn3);
                                       safeSetState(() {});
                                       if (FFAppState().isReleOn3 == true) {
                                         await ReleThreeGroup.releOnCopyCopyCall

@@ -140,7 +140,7 @@ class _ConfigSaida3WidgetState extends State<ConfigSaida3Widget> {
                                                   ?.unfocus();
                                             },
                                             child: MudarnomeTresWidget(
-                                              lista: widget!.lista!,
+                                              lista: widget.lista!,
                                             ),
                                           ),
                                         );
@@ -271,7 +271,7 @@ class _ConfigSaida3WidgetState extends State<ConfigSaida3Widget> {
                                     child: FFButtonWidget(
                                       onPressed: () async {
                                         FFAppState().isReleOn1 =
-                                            !(FFAppState().isReleOn1 ?? true);
+                                            !(FFAppState().isReleOn1);
                                         FFAppState().qualRele = 1;
                                         safeSetState(() {});
                                         if (FFAppState().isReleOn1 == true) {

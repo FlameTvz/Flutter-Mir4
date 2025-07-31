@@ -138,7 +138,7 @@ class _Rele1WidgetState extends State<Rele1Widget> {
                                         ?.unfocus();
                                   },
                                   child: MudarnomeUmWidget(
-                                    lista: widget!.lista2!,
+                                    lista: widget.lista2!,
                                   ),
                                 ),
                               );

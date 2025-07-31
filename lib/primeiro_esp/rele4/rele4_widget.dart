@@ -148,7 +148,7 @@ class _Rele4WidgetState extends State<Rele4Widget> {
                                         ?.unfocus();
                                   },
                                   child: MudarnomeQuatroWidget(
-                                    lista: widget!.lista!,
+                                    lista: widget.lista!,
                                   ),
                                 ),
                               );
@@ -221,7 +221,7 @@ class _Rele4WidgetState extends State<Rele4Widget> {
                                   child: FFButtonWidget(
                                     onPressed: () async {
                                       FFAppState().isRele4 =
-                                          !(FFAppState().isRele4 ?? true);
+                                          !(FFAppState().isRele4);
                                       safeSetState(() {});
                                       if (FFAppState().isRele4 == true) {
                                         await ReleFourGroup
