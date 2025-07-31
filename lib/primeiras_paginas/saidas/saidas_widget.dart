@@ -1,3 +1,6 @@
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -12,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'saidas_model.dart';
 export 'saidas_model.dart';
+
 
 /// quero uma pagina q tenha 5 botoes que sejam bonitos e que aparece o estado
 /// do rele  atual para levar para 5 paginas de rele  e uma parte que aparece
@@ -570,7 +574,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     FFButtonWidget(
                                       onPressed: () async {
                                         context.pushNamedSafe(
-                                          Rele2Widget.routeName,
+                                          ConfigSaida2Widget.routeName,
                                           queryParameters: {
                                             'lista2': serializeParam(
                                               widget!.lista,
@@ -907,7 +911,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     FFButtonWidget(
                                       onPressed: () async {
                                         context.pushNamedSafe(
-                                          Rele3Widget.routeName,
+                                          ConfigSaida3Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
                                               widget!.lista,
@@ -1244,7 +1248,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     FFButtonWidget(
                                       onPressed: () async {
                                         context.pushNamedSafe(
-                                          Rele4Widget.routeName,
+                                          ConfigSaida4Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
                                               widget!.lista,
@@ -1582,7 +1586,7 @@ class _SaidasWidgetState extends State<SaidasWidget> {
                                     FFButtonWidget(
                                       onPressed: () async {
                                         context.pushNamedSafe(
-                                          Rele5Widget.routeName,
+                                          ConfigSaida5Widget.routeName,
                                           queryParameters: {
                                             'lista': serializeParam(
                                               widget!.lista,

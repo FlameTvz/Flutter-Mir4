@@ -1,9 +1,11 @@
 import 'package:mir4/eventos2/export_eventos_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/nav/nav.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -30,11 +32,40 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final _unfocusNode = FocusNode();
+  
+  // ============================================================================
+  // 🔧 PEGAR ID DO ESP ATUAL DA VARIÁVEL DO APP
+  // ============================================================================
+  String? get espIdAtual {
+    try {
+      // Tenta pegar da variável global do app
+      final appState = Provider.of<FFAppState>(context, listen: false);
+      final idESP = appState.idsESP; // Sua variável existente
+      
+      print('🔧 ESP ID obtido da variável idESP: $idESP');
+      return idESP.isNotEmpty ? idESP : null;
+    } catch (e) {
+      print('❌ Erro ao obter ESP ID: $e');
+      return null;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => Eventos2Model());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // ============================================================================
+    // 🔧 DEBUG: MOSTRAR ESP ID OBTIDO DA VARIÁVEL
+    // ============================================================================
+    print('🔧 Eventos2Widget - didChangeDependencies');
+    print('📱 ESP ID da variável idESP: ${espIdAtual}');
+    print('🎯 Filtro ativo: ${espIdAtual != null ? 'SIM' : 'NÃO'}');
   }
 
   @override
@@ -45,14 +76,14 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
   }
 
   // ============================================================================
-  // 🔧 FUNÇÃO PARA MOSTRAR DIÁLOGO DE EXPORTAÇÃO (ADICIONADA)
+  // 🔧 FUNÇÃO PARA MOSTRAR DIÁLOGO DE EXPORTAÇÃO COM ESP ATUAL
   // ============================================================================
   
   void mostrarDialogoExportacao(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return ExportDialogWidget();
+        return ExportDialogWidget(espId: espIdAtual); // Usar ESP atual
       },
     );
   }
@@ -69,8 +100,17 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
         appBar: AppBar(
           backgroundColor: FlutterFlowTheme.of(context).primary,
           automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              context.safePop();
+            },
+          ),
           title: Text(
-            'Eventos',
+            // ============================================================================
+            // 🔧 MOSTRAR ESP ID ATUAL NO TÍTULO
+            // ============================================================================
+            espIdAtual != null ? 'Eventos - $espIdAtual' : 'Eventos',
             style: FlutterFlowTheme.of(context).headlineMedium.override(
                   fontFamily: 'Outfit',
                   color: Colors.white,
@@ -114,6 +154,35 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
                 thickness: 2.0,
                 color: FlutterFlowTheme.of(context).alternate,
               ),
+              
+              // ============================================================================
+              // 🔧 INFO BOX MOSTRANDO ESP ATUAL
+              // ============================================================================
+              if (espIdAtual != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12.0),
+                  margin: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.memory, color: Colors.blue, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Visualizando eventos do ESP: $espIdAtual',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[800],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              
               // Barra de ações
               Container(
                 padding: const EdgeInsets.all(12.0),
@@ -124,7 +193,9 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
                         onPressed: () {
                           mostrarDialogoExportacao(context);
                         },
-                        text: 'Exportar Eventos',
+                        text: espIdAtual != null 
+                            ? 'Exportar ESP $espIdAtual' 
+                            : 'Exportar Eventos',
                         icon: const Icon(Icons.file_download, size: 16),
                         options: FFButtonOptions(
                           height: 40.0,
@@ -169,20 +240,14 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
                   ],
                 ),
               ),
-              const Expanded(
-                // 🔽 Lista dos eventos do Firestore
-                child: EventosListWidget(),
+              Expanded(
+                // ============================================================================
+                // 🔧 PASSAR ESP ID ATUAL PARA O WIDGET DE LISTA
+                // ============================================================================
+                child: EventosListWidget(espId: espIdAtual),
               ),
             ],
           ),
-        ),
-        // FloatingActionButton para adicionar evento manualmente (opcional)
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _mostrarDialogoAdicionarEvento(context);
-          },
-          backgroundColor: FlutterFlowTheme.of(context).primary,
-          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
     );
@@ -192,7 +257,7 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const EstatisticasDialog();
+        return EstatisticasDialog(espId: espIdAtual); // Usar ESP atual
       },
     );
   }
@@ -212,8 +277,10 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
               ),
             ],
           ),
-          content: const Text(
-            'Escolha uma opção para limpar os eventos:',
+          content: Text(
+            espIdAtual != null 
+                ? 'Escolha uma opção para limpar os eventos do ESP $espIdAtual:'
+                : 'Escolha uma opção para limpar os eventos:',
           ),
           actions: [
             TextButton(
@@ -232,7 +299,12 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
                 Navigator.of(context).pop();
                 _confirmarLimpezaTotal();
               },
-              child: const Text('Limpar todos', style: TextStyle(color: Colors.red)),
+              child: Text(
+                espIdAtual != null 
+                    ? 'Limpar todos do ESP' 
+                    : 'Limpar todos', 
+                style: TextStyle(color: Colors.red)
+              ),
             ),
           ],
         );
@@ -244,22 +316,50 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
     try {
       final DateTime dataLimite = DateTime.now().subtract(const Duration(days: 30));
       
-      // Buscar e deletar eventos antigos
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .where('timestamp', isLessThan: Timestamp.fromDate(dataLimite))
-          .get();
+      final DatabaseReference eventosRef = FirebaseDatabase.instance.ref('MIR/eventos');
+      final DatabaseEvent event = await eventosRef.once();
       
-      final batch = FirebaseFirestore.instance.batch();
-      for (var doc in snapshot.docs) {
-        batch.delete(doc.reference);
+      if (event.snapshot.exists) {
+        final Map<dynamic, dynamic> eventos = event.snapshot.value as Map<dynamic, dynamic>;
+        final Map<String, dynamic> eventosParaRemover = {};
+        
+        eventos.forEach((key, value) {
+          if (value is Map) {
+            try {
+              final timestamp = SafeParser.parseInt(value['timestamp']);
+              final dispositivo = SafeParser.parseString(value['dispositivoId']);
+              final DateTime dataEvento = DateTime.fromMillisecondsSinceEpoch(timestamp);
+              
+              // ============================================================================
+              // 🔧 FILTRAR POR ESP ATUAL SE ESPECIFICADO
+              // ============================================================================
+              bool deveRemover = dataEvento.isBefore(dataLimite);
+              if (espIdAtual != null) {
+                deveRemover = deveRemover && dispositivo == espIdAtual;
+              }
+              
+              if (deveRemover) {
+                eventosParaRemover[key] = null;
+              }
+            } catch (e) {
+              print('Erro ao processar timestamp do evento $key: $e');
+            }
+          }
+        });
+        
+        if (eventosParaRemover.isNotEmpty) {
+          await eventosRef.update(eventosParaRemover);
+        }
       }
-      await batch.commit();
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${snapshot.docs.length} eventos antigos removidos com sucesso!'),
+            content: Text(
+              espIdAtual != null 
+                  ? 'Eventos antigos do ESP $espIdAtual removidos!'
+                  : 'Eventos antigos removidos com sucesso!'
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -282,8 +382,10 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar Limpeza Total'),
-          content: const Text(
-            'ATENÇÃO: Esta ação irá remover TODOS os eventos permanentemente. Esta operação não pode ser desfeita!',
+          content: Text(
+            espIdAtual != null 
+                ? 'ATENÇÃO: Esta ação irá remover TODOS os eventos do ESP $espIdAtual permanentemente. Esta operação não pode ser desfeita!'
+                : 'ATENÇÃO: Esta ação irá remover TODOS os eventos permanentemente. Esta operação não pode ser desfeita!',
           ),
           actions: [
             TextButton(
@@ -305,22 +407,44 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
 
   Future<void> _limparTodosEventos() async {
     try {
-      // Buscar todos os eventos
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .get();
+      final DatabaseReference eventosRef = FirebaseDatabase.instance.ref('MIR/eventos');
       
-      // Deletar em batch
-      final batch = FirebaseFirestore.instance.batch();
-      for (var doc in snapshot.docs) {
-        batch.delete(doc.reference);
+      if (espIdAtual != null) {
+        // ============================================================================
+        // 🔧 LIMPAR APENAS EVENTOS DO ESP ATUAL
+        // ============================================================================
+        final DatabaseEvent event = await eventosRef.once();
+        
+        if (event.snapshot.exists) {
+          final Map<dynamic, dynamic> eventos = event.snapshot.value as Map<dynamic, dynamic>;
+          final Map<String, dynamic> eventosParaRemover = {};
+          
+          eventos.forEach((key, value) {
+            if (value is Map) {
+              final dispositivo = SafeParser.parseString(value['dispositivoId']);
+              if (dispositivo == espIdAtual) {
+                eventosParaRemover[key] = null;
+              }
+            }
+          });
+          
+          if (eventosParaRemover.isNotEmpty) {
+            await eventosRef.update(eventosParaRemover);
+          }
+        }
+      } else {
+        // Limpar todos os eventos
+        await eventosRef.remove();
       }
-      await batch.commit();
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${snapshot.docs.length} eventos foram removidos!'),
+            content: Text(
+              espIdAtual != null 
+                  ? 'Todos os eventos do ESP $espIdAtual foram removidos!'
+                  : 'Todos os eventos foram removidos!'
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -336,20 +460,44 @@ class _Eventos2WidgetState extends State<Eventos2Widget> {
       }
     }
   }
+}
 
-  void _mostrarDialogoAdicionarEvento(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AdicionarEventoDialog();
-      },
-    );
+// ============================================================================
+// CLASSE PARA PARSING SEGURO
+// ============================================================================
+
+class SafeParser {
+  static int parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) {
+      try {
+        return int.parse(value);
+      } catch (e) {
+        try {
+          return double.parse(value).toInt();
+        } catch (e) {
+          return 0;
+        }
+      }
+    }
+    return 0;
+  }
+
+  static String parseString(dynamic value) {
+    if (value == null) return '';
+    return value.toString();
   }
 }
 
-// Widget para mostrar estatísticas
+// ============================================================================
+// 🔥 WIDGET PARA ESTATÍSTICAS ESPECÍFICAS DO ESP
+// ============================================================================
 class EstatisticasDialog extends StatelessWidget {
-  const EstatisticasDialog({Key? key}) : super(key: key);
+  final String? espId;
+  
+  const EstatisticasDialog({Key? key, this.espId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -359,13 +507,15 @@ class EstatisticasDialog extends StatelessWidget {
           Icon(Icons.analytics, color: FlutterFlowTheme.of(context).primary),
           const SizedBox(width: 8),
           Text(
-            'Estatísticas dos Eventos',
+            espId != null 
+                ? 'Estatísticas - ESP $espId'
+                : 'Estatísticas dos Eventos',
             style: FlutterFlowTheme.of(context).headlineSmall,
           ),
         ],
       ),
       content: FutureBuilder<Map<String, dynamic>>(
-        future: ExportEventosService.getEstatisticasEventos(),
+        future: ExportEventosService.getEstatisticasEventosEsp(espId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(
@@ -395,33 +545,29 @@ class EstatisticasDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildStatCard('Total de Eventos', stats['totalEventos'].toString()),
-                  _buildStatCard('Dispositivos Únicos', (stats['eventosPorDispositivo'] as Map).length.toString()),
-                  _buildStatCard('Origens Únicas', (stats['eventosPorTipo'] as Map).length.toString()),
+                  if (espId == null) 
+                    _buildStatCard('Dispositivos Únicos', (stats['eventosPorDispositivo'] as Map).length.toString()),
+                  _buildStatCard('Estados Únicos', (stats['eventosPorEstado'] as Map).length.toString()),
                   const SizedBox(height: 16),
                   
                   Text(
-                    'Eventos por Tipo:',
+                    'Eventos por Estado:',
                     style: FlutterFlowTheme.of(context).titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...((stats['eventosPorTipo'] as Map<String, dynamic>).entries.map(
+                  ...((stats['eventosPorEstado'] as Map<String, dynamic>).entries.map(
                     (entry) => _buildStatItem(entry.key, entry.value.toString()),
                   )),
                   const SizedBox(height: 16),
                   
                   Text(
-                    'Top 5 Dispositivos:',
+                    'Eventos por Origem:',
                     style: FlutterFlowTheme.of(context).titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...((stats['eventosPorDispositivo'] as Map<String, dynamic>)
-                      .entries
-                      .toList()
-                      ..sort((a, b) => b.value.compareTo(a.value)))
-                      .take(5)
-                      .map(
-                        (entry) => _buildStatItem(entry.key, entry.value.toString()),
-                      ),
+                  ...((stats['eventosPorOrigem'] as Map<String, dynamic>).entries.map(
+                    (entry) => _buildStatItem(entry.key, entry.value.toString()),
+                  )),
                 ],
               ),
             ),
@@ -476,9 +622,13 @@ class EstatisticasDialog extends StatelessWidget {
   }
 }
 
-// Widget para adicionar evento manualmente
+// ============================================================================
+// 🔥 WIDGET PARA ADICIONAR EVENTO COM ESP ESPECÍFICO
+// ============================================================================
 class AdicionarEventoDialog extends StatefulWidget {
-  const AdicionarEventoDialog({Key? key}) : super(key: key);
+  final String? espId;
+  
+  const AdicionarEventoDialog({Key? key, this.espId}) : super(key: key);
 
   @override
   State<AdicionarEventoDialog> createState() => _AdicionarEventoDialogState();
@@ -493,10 +643,23 @@ class _AdicionarEventoDialogState extends State<AdicionarEventoDialog> {
   String _origemSelecionada = 'MANUAL';
 
   @override
+  void initState() {
+    super.initState();
+    // ============================================================================
+    // 🔧 PRÉ-PREENCHER COM ESP ID SE DISPONÍVEL
+    // ============================================================================
+    if (widget.espId != null) {
+      _dispositivoController.text = widget.espId!;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Adicionar Evento',
+        widget.espId != null 
+            ? 'Adicionar Evento - ESP ${widget.espId}'
+            : 'Adicionar Evento',
         style: FlutterFlowTheme.of(context).headlineSmall,
       ),
       content: Form(
@@ -511,6 +674,10 @@ class _AdicionarEventoDialogState extends State<AdicionarEventoDialog> {
                   labelText: 'ID do Dispositivo',
                   border: OutlineInputBorder(),
                 ),
+                // ============================================================================
+                // 🔧 DESABILITAR CAMPO SE ESP ID ESTIVER DEFINIDO
+                // ============================================================================
+                enabled: widget.espId == null,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo obrigatório';
@@ -631,24 +798,40 @@ class _AdicionarEventoDialogState extends State<AdicionarEventoDialog> {
   Future<void> _adicionarEvento() async {
     if (_formKey.currentState!.validate()) {
       try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Você precisa estar logado para adicionar eventos'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+        
+        final DatabaseReference eventosRef = FirebaseDatabase.instance.ref('MIR/eventos');
+        final String novoEventoId = eventosRef.push().key!;
+        
         final evento = {
           'dispositivoId': _dispositivoController.text,
           'estado': _estadoSelecionado,
           'numeroRele': int.parse(_numeroReleController.text),
           'origem': _origemSelecionada,
           'pinoEntrada': int.parse(_pinoEntradaController.text),
-          'timestamp': Timestamp.now(),
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
         };
 
-        await FirebaseFirestore.instance
-            .collection('eventos')
-            .add(evento);
+        await eventosRef.child(novoEventoId).set(evento);
 
         if (mounted) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Evento adicionado com sucesso!'),
+            SnackBar(
+              content: Text(
+                widget.espId != null 
+                    ? 'Evento adicionado para ESP ${widget.espId}!'
+                    : 'Evento adicionado com sucesso!'
+              ),
               backgroundColor: Colors.green,
             ),
           );

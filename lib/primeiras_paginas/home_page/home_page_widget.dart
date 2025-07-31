@@ -12,6 +12,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'home_page_model.dart';
 export 'home_page_model.dart';
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
 
 /// quero uma pagina q tenha 5 botoes que sejam bonitos e que aparece o estado
 /// do rele  atual para levar para 5 paginas de rele  e uma parte que aparece

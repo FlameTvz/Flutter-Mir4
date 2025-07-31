@@ -175,7 +175,16 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: ControlesWidget.routeName,
           path: ControlesWidget.routePath,
-          builder: (context, params) => ControlesWidget(),
+          builder: (context, params) => ControlesWidget(
+            idesp: params.getParam(
+              'idesp',
+              ParamType.String,
+            )!, // Pega o 'idesp' da URL
+            nomeEsp: params.getParam(
+              'nomeEsp',
+              ParamType.String,
+            )!, // Pega o 'nomeEsp' da URL
+          ),
         ),
         FFRoute(
           name: SaidasWidget.routeName,
@@ -350,7 +359,7 @@ extension NavigationExtensions on BuildContext {
   // ============================================================================
   // 🎯 FUNÇÃO PRINCIPAL CORRIGIDA - safePop()
   // ============================================================================
-  
+
   void safePop() {
     // ✅ SEMPRE volta para a página anterior se possível
     if (canPop()) {

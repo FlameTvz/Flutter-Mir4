@@ -313,7 +313,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xhdpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xhdpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xhdpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_abc_ratingbar_indicator_material.xml.flat",
@@ -357,7 +357,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-ldpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-ldpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-ldpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/layout_m3_alert_dialog_actions.xml.flat",
@@ -841,7 +841,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxxhdpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxxhdpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxxhdpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/color-v31_m3_ref_palette_dynamic_neutral96.xml.flat",
@@ -1029,7 +1029,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-anydpi-v21_ic_barcode_flash_on.xml.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-anydpi-v21/ic_barcode_flash_on.xml"
+        "source": "mir4.inovanex.app-release-68:/drawable-anydpi-v21/ic_barcode_flash_on.xml"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-hdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
@@ -1101,7 +1101,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xhdpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xhdpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xhdpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-mdpi-v4_ic_call_answer_video_low.png.flat",
@@ -1173,7 +1173,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxxhdpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxxhdpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxxhdpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_mtrl_checkbox_button_icon_unchecked_indeterminate.xml.flat",
@@ -1357,7 +1357,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-ldpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-ldpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-ldpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_material_ic_keyboard_arrow_left_black_24dp.xml.flat",
@@ -1505,7 +1505,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-anydpi-v21_ic_switch_camera.xml.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-anydpi-v21/ic_switch_camera.xml"
+        "source": "mir4.inovanex.app-release-68:/drawable-anydpi-v21/ic_switch_camera.xml"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/layout_preference_dialog_edittext.xml.flat",
@@ -1525,7 +1525,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-hdpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-hdpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-hdpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/color_abc_primary_text_disable_only_material_dark.xml.flat",
@@ -1673,7 +1673,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/xml_flutter_share_file_paths.xml.flat",
-        "source": "mir4.inovanex.app-release-72:/xml/flutter_share_file_paths.xml"
+        "source": "mir4.inovanex.app-release-73:/xml/flutter_share_file_paths.xml"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_m3_avd_show_password.xml.flat",
@@ -1741,7 +1741,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-mdpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-mdpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-mdpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxxhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
@@ -1877,7 +1877,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-ldpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-ldpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-ldpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/layout_browser_actions_context_menu_page.xml.flat",
@@ -1941,7 +1941,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-mdpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-mdpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-mdpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/color_mtrl_on_primary_text_btn_text_color_selector.xml.flat",
@@ -2049,7 +2049,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-hdpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-hdpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-hdpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
@@ -2069,7 +2069,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxhdpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxhdpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxhdpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/color_m3_selection_control_ripple_color_selector.xml.flat",
@@ -2125,7 +2125,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-anydpi-v21_ic_barcode_flash_off.xml.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-anydpi-v21/ic_barcode_flash_off.xml"
+        "source": "mir4.inovanex.app-release-68:/drawable-anydpi-v21/ic_barcode_flash_off.xml"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_abc_ic_menu_overflow_material.xml.flat",
@@ -2309,7 +2309,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-mdpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-mdpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-mdpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_common_google_signin_btn_text_light_normal.xml.flat",
@@ -2517,7 +2517,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xhdpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xhdpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xhdpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable_abc_btn_borderless_material.xml.flat",
@@ -2565,7 +2565,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxxhdpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxxhdpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxxhdpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/layout_m3_auto_complete_simple_item.xml.flat",
@@ -2641,7 +2641,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-hdpi-v4_ic_switch_camera.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-hdpi-v4/ic_switch_camera.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-hdpi-v4/ic_switch_camera.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-mdpi-v4_notification_bg_low_normal.9.png.flat",
@@ -3069,7 +3069,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxhdpi-v4_ic_barcode_flash_on.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxhdpi-v4/ic_barcode_flash_on.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxhdpi-v4/ic_barcode_flash_on.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxhdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
@@ -3205,7 +3205,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/layout_barcode_capture.xml.flat",
-        "source": "mir4.inovanex.app-release-67:/layout/barcode_capture.xml"
+        "source": "mir4.inovanex.app-release-68:/layout/barcode_capture.xml"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxxhdpi-v4_ic_call_answer_video_low.png.flat",
@@ -3437,7 +3437,7 @@
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-xxhdpi-v4_ic_barcode_flash_off.png.flat",
-        "source": "mir4.inovanex.app-release-67:/drawable-xxhdpi-v4/ic_barcode_flash_off.png"
+        "source": "mir4.inovanex.app-release-68:/drawable-xxhdpi-v4/ic_barcode_flash_off.png"
     },
     {
         "merged": "mir4.inovanex.app-release-60:/drawable-anydpi-v21_ic_call_answer_video_low.xml.flat",

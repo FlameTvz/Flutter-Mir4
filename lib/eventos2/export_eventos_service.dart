@@ -1,60 +1,170 @@
 // ============================================================================
-// ARQUIVO: lib/eventos2/export_eventos_service.dart - VERSÃO FINAL CORRIGIDA
+// ARQUIVO: lib/eventos2/export_eventos_service.dart - FIREBASE REALTIME DATABASE
 // ============================================================================
 
 import 'dart:typed_data';
 import 'dart:io';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ExportEventosService {
   
   // ============================================================================
-  // MÉTODO PARA BUSCAR ESTATÍSTICAS DE EVENTOS
+  // REFERÊNCIA PARA O REALTIME DATABASE - CAMINHO CORRETO
+  // ============================================================================
+  
+  // Usar o caminho correto onde estão os eventos
+  static DatabaseReference get _eventosRef {
+    return FirebaseDatabase.instance.ref('MIR/eventos');
+  }
+  
+  // Função auxiliar para verificar autenticação
+  static Future<void> _garantirAutenticacao() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception('Usuário não autenticado. Faça login para acessar os eventos.');
+    }
+  }
+  
+  // ============================================================================
+  // MÉTODO PARA BUSCAR ESTATÍSTICAS DE EVENTOS (GERAL OU POR ESP)
   // ============================================================================
   
   static Future<Map<String, dynamic>> getEstatisticasEventos() async {
+    return getEstatisticasEventosEsp(null); // Todos os eventos
+  }
+  
+  static Future<Map<String, dynamic>> getEstatisticasEventosEsp(String? espId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .get();
+      await _garantirAutenticacao();
       
-      final eventos = snapshot.docs;
-      final Map<String, int> eventosPorTipo = {};
-      final Map<String, int> eventosPorDispositivo = {};
+      final DatabaseEvent event = await _eventosRef.once();
       
-      for (var doc in eventos) {
-        final data = doc.data();
-        final origem = data['origem']?.toString() ?? 'N/A';
-        final dispositivo = data['dispositivoId']?.toString() ?? 'N/A';
-        
-        eventosPorTipo[origem] = (eventosPorTipo[origem] ?? 0) + 1;
-        eventosPorDispositivo[dispositivo] = (eventosPorDispositivo[dispositivo] ?? 0) + 1;
+      if (!event.snapshot.exists) {
+        return {
+          'totalEventos': 0,
+          'eventosPorTipo': <String, int>{},
+          'eventosPorDispositivo': <String, int>{},
+          'eventosPorEstado': <String, int>{},
+          'eventosPorOrigem': <String, int>{},
+          'eventoMaisRecente': null,
+          'dispositivosUnicos': 0,
+          'origensUnicas': 0,
+          'estadosUnicos': 0,
+        };
       }
       
+      final Map<dynamic, dynamic> eventosData = event.snapshot.value as Map<dynamic, dynamic>;
+      final Map<String, int> eventosPorTipo = {};
+      final Map<String, int> eventosPorDispositivo = {};
+      final Map<String, int> eventosPorEstado = {};
+      final Map<String, int> eventosPorOrigem = {};
+      
+      Map<String, dynamic>? eventoMaisRecente;
+      int timestampMaisRecente = 0;
+      int totalEventos = 0;
+      
+      eventosData.forEach((key, value) {
+        if (value is Map) {
+          final evento = Map<String, dynamic>.from(value);
+          
+          // Contadores - garantir que são strings
+          final origem = (evento['origem'] ?? 'N/A').toString();
+          final dispositivo = (evento['dispositivoId'] ?? 'N/A').toString();
+          final estado = (evento['estado'] ?? 'N/A').toString();
+          
+          // ============================================================================
+          // 🔧 FILTRAR POR ESP SE ESPECIFICADO
+          // ============================================================================
+          if (espId != null && dispositivo != espId) {
+            return; // Pular este evento se não for do ESP especificado
+          }
+          
+          totalEventos++;
+          eventosPorTipo[origem] = (eventosPorTipo[origem] ?? 0) + 1;
+          eventosPorDispositivo[dispositivo] = (eventosPorDispositivo[dispositivo] ?? 0) + 1;
+          eventosPorEstado[estado] = (eventosPorEstado[estado] ?? 0) + 1;
+          eventosPorOrigem[origem] = (eventosPorOrigem[origem] ?? 0) + 1;
+          
+          // Evento mais recente - garantir que timestamp é int
+          final timestamp = _parseToInt(evento['timestamp']);
+          if (timestamp > timestampMaisRecente) {
+            timestampMaisRecente = timestamp;
+            eventoMaisRecente = {
+              'id': key.toString(),
+              'dispositivoId': dispositivo,
+              'estado': estado,
+              'timestamp': DateTime.fromMillisecondsSinceEpoch(timestamp).toString(),
+              'numeroRele': _parseToInt(evento['numeroRele']),
+              'origem': origem,
+              'pinoEntrada': _parseToInt(evento['pinoEntrada']),
+            };
+          }
+        }
+      });
+      
       return {
-        'totalEventos': eventos.length,
+        'totalEventos': totalEventos,
         'eventosPorTipo': eventosPorTipo,
         'eventosPorDispositivo': eventosPorDispositivo,
-        'eventosRecentes': eventos.take(10).map((doc) => {
-          'id': doc.id,
-          'timestamp': doc.data()['timestamp']?.toDate()?.toIso8601String(),
-          'dispositivo': doc.data()['dispositivoId'],
-          'estado': doc.data()['estado'],
-        }).toList(),
+        'eventosPorEstado': eventosPorEstado,
+        'eventosPorOrigem': eventosPorOrigem,
+        'eventoMaisRecente': eventoMaisRecente,
+        'dispositivosUnicos': eventosPorDispositivo.keys.length,
+        'origensUnicas': eventosPorOrigem.keys.length,
+        'estadosUnicos': eventosPorEstado.keys.length,
       };
+      
     } catch (e) {
+      print('Erro ao buscar estatísticas: $e');
       return {
         'totalEventos': 0,
-        'eventosPorTipo': {},
-        'eventosPorDispositivo': {},
-        'eventosRecentes': [],
+        'eventosPorTipo': <String, int>{},
+        'eventosPorDispositivo': <String, int>{},
+        'eventosPorEstado': <String, int>{},
+        'eventosPorOrigem': <String, int>{},
+        'eventoMaisRecente': null,
+        'dispositivosUnicos': 0,
+        'origensUnicas': 0,
+        'estadosUnicos': 0,
       };
     }
+  }
+
+  // ============================================================================
+  // FUNÇÃO AUXILIAR PARA CONVERTER VALORES PARA INT
+  // ============================================================================
+  
+  static int _parseToInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) {
+      try {
+        return int.parse(value);
+      } catch (e) {
+        try {
+          return double.parse(value).toInt();
+        } catch (e) {
+          return 0;
+        }
+      }
+    }
+    return 0;
+  }
+  
+  // ============================================================================
+  // FUNÇÃO AUXILIAR PARA CONVERTER VALORES PARA STRING
+  // ============================================================================
+  
+  static String _parseToString(dynamic value) {
+    if (value == null) return '';
+    return value.toString();
   }
   
   // ============================================================================
@@ -69,10 +179,12 @@ class ExportEventosService {
         'eventos': eventos,
         'exportadoEm': DateTime.now().toIso8601String(),
         'total': eventos.length,
+        'fonte': 'Firebase Realtime Database',
+        'caminho': 'MIR/Eventos',
       });
       
       final bytes = Uint8List.fromList(utf8.encode(jsonString));
-      final fileName = 'eventos_${DateTime.now().millisecondsSinceEpoch}.json';
+      final fileName = 'eventos_realtime_${DateTime.now().millisecondsSinceEpoch}.json';
       
       await _exportFile(bytes, fileName, 'application/json');
       
@@ -89,22 +201,21 @@ class ExportEventosService {
     try {
       eventos ??= await _buscarEventos();
       
-      String csvString = 'ID,Data,Tipo,Descricao,Dispositivo,NumeroRele,Estado,Origem,PinoEntrada\n';
+      String csvString = 'ID,Data,Dispositivo,Estado,NumeroRele,Origem,PinoEntrada,Timestamp\n';
       
       for (var evento in eventos) {
         csvString += '${evento['id'] ?? ''},'
-                    '${evento['data'] ?? ''},'
-                    '${evento['tipo'] ?? ''},'
-                    '"${evento['descricao'] ?? ''}",'
-                    '${evento['dispositivo'] ?? ''},'
-                    '${evento['numeroRele'] ?? ''},'
+                    '"${evento['data'] ?? ''}",'
+                    '"${evento['dispositivo'] ?? ''}",'
                     '${evento['estado'] ?? ''},'
+                    '${evento['numeroRele'] ?? ''},'
                     '${evento['origem'] ?? ''},'
-                    '${evento['pinoEntrada'] ?? ''}\n';
+                    '${evento['pinoEntrada'] ?? ''},'
+                    '${evento['timestamp'] ?? ''}\n';
       }
       
       final bytes = Uint8List.fromList(utf8.encode(csvString));
-      final fileName = 'eventos_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final fileName = 'eventos_realtime_${DateTime.now().millisecondsSinceEpoch}.csv';
       
       await _exportFile(bytes, fileName, 'text/csv');
       
@@ -137,7 +248,7 @@ class ExportEventosService {
   }
   
   // ============================================================================
-  // EXPORTAR EVENTOS POR DISPOSITIVO (CORRIGIDO)
+  // EXPORTAR EVENTOS POR DISPOSITIVO
   // ============================================================================
   
   static Future<void> exportarEventosPorDispositivo(
@@ -159,31 +270,43 @@ class ExportEventosService {
   }
 
   // ============================================================================
-  // BUSCAR TODOS OS EVENTOS DO FIRESTORE
+  // BUSCAR TODOS OS EVENTOS DO REALTIME DATABASE
   // ============================================================================
   
   static Future<List<dynamic>> _buscarEventos() async {
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .orderBy('timestamp', descending: true)
-          .get();
+      final DatabaseEvent event = await _eventosRef.orderByChild('timestamp').once();
       
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
-                 DateTime.now().toIso8601String(),
-          'tipo': data['origem'] ?? 'N/A',
-          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
-          'dispositivo': data['dispositivoId'] ?? 'N/A',
-          'numeroRele': data['numeroRele'] ?? 0,
-          'estado': data['estado'] ?? 'N/A',
-          'origem': data['origem'] ?? 'N/A',
-          'pinoEntrada': data['pinoEntrada'] ?? -1,
-        };
-      }).toList();
+      if (!event.snapshot.exists) {
+        return [];
+      }
+      
+      final Map<dynamic, dynamic> eventosData = event.snapshot.value as Map<dynamic, dynamic>;
+      final List<dynamic> eventos = [];
+      
+      eventosData.forEach((key, value) {
+        if (value is Map) {
+          final evento = Map<String, dynamic>.from(value);
+          final timestamp = _parseToInt(evento['timestamp']);
+          
+          eventos.add({
+            'id': key.toString(),
+            'data': DateTime.fromMillisecondsSinceEpoch(timestamp).toIso8601String(),
+            'dispositivo': _parseToString(evento['dispositivoId']),
+            'estado': _parseToString(evento['estado']),
+            'numeroRele': _parseToInt(evento['numeroRele']),
+            'origem': _parseToString(evento['origem']),
+            'pinoEntrada': _parseToInt(evento['pinoEntrada']),
+            'timestamp': timestamp,
+          });
+        }
+      });
+      
+      // Ordenar por timestamp (mais recente primeiro)
+      eventos.sort((a, b) => (b['timestamp'] ?? 0).compareTo(a['timestamp'] ?? 0));
+      
+      return eventos;
+      
     } catch (e) {
       print('Erro ao buscar eventos: $e');
       return [];
@@ -199,28 +322,45 @@ class ExportEventosService {
     DateTime fim,
   ) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(inicio))
-          .where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(fim))
-          .orderBy('timestamp', descending: true)
-          .get();
+      final timestampInicio = inicio.millisecondsSinceEpoch;
+      final timestampFim = fim.millisecondsSinceEpoch;
       
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
-                 DateTime.now().toIso8601String(),
-          'tipo': data['origem'] ?? 'N/A',
-          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
-          'dispositivo': data['dispositivoId'] ?? 'N/A',
-          'numeroRele': data['numeroRele'] ?? 0,
-          'estado': data['estado'] ?? 'N/A',
-          'origem': data['origem'] ?? 'N/A',
-          'pinoEntrada': data['pinoEntrada'] ?? -1,
-        };
-      }).toList();
+      final DatabaseEvent event = await _eventosRef
+          .orderByChild('timestamp')
+          .startAt(timestampInicio)
+          .endAt(timestampFim)
+          .once();
+      
+      if (!event.snapshot.exists) {
+        return [];
+      }
+      
+      final Map<dynamic, dynamic> eventosData = event.snapshot.value as Map<dynamic, dynamic>;
+      final List<dynamic> eventos = [];
+      
+      eventosData.forEach((key, value) {
+        if (value is Map) {
+          final evento = Map<String, dynamic>.from(value);
+          final timestamp = _parseToInt(evento['timestamp']);
+          
+          eventos.add({
+            'id': key.toString(),
+            'data': DateTime.fromMillisecondsSinceEpoch(timestamp).toIso8601String(),
+            'dispositivo': _parseToString(evento['dispositivoId']),
+            'estado': _parseToString(evento['estado']),
+            'numeroRele': _parseToInt(evento['numeroRele']),
+            'origem': _parseToString(evento['origem']),
+            'pinoEntrada': _parseToInt(evento['pinoEntrada']),
+            'timestamp': timestamp,
+          });
+        }
+      });
+      
+      // Ordenar por timestamp (mais recente primeiro)
+      eventos.sort((a, b) => (b['timestamp'] ?? 0).compareTo(a['timestamp'] ?? 0));
+      
+      return eventos;
+      
     } catch (e) {
       print('Erro ao buscar eventos por período: $e');
       return [];
@@ -233,29 +373,78 @@ class ExportEventosService {
   
   static Future<List<dynamic>> _buscarEventosPorDispositivo(String dispositivoId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .where('dispositivoId', isEqualTo: dispositivoId)
-          .orderBy('timestamp', descending: true)
-          .get();
+      final DatabaseEvent event = await _eventosRef
+          .orderByChild('dispositivoId')
+          .equalTo(dispositivoId)
+          .once();
       
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'data': data['timestamp']?.toDate()?.toIso8601String() ?? 
-                 DateTime.now().toIso8601String(),
-          'tipo': data['origem'] ?? 'N/A',
-          'descricao': 'Evento ${data['numeroRele'] ?? 'N/A'} - ${data['estado'] ?? 'N/A'}',
-          'dispositivo': data['dispositivoId'] ?? 'N/A',
-          'numeroRele': data['numeroRele'] ?? 0,
-          'estado': data['estado'] ?? 'N/A',
-          'origem': data['origem'] ?? 'N/A',
-          'pinoEntrada': data['pinoEntrada'] ?? -1,
-        };
-      }).toList();
+      if (!event.snapshot.exists) {
+        return [];
+      }
+      
+      final Map<dynamic, dynamic> eventosData = event.snapshot.value as Map<dynamic, dynamic>;
+      final List<dynamic> eventos = [];
+      
+      eventosData.forEach((key, value) {
+        if (value is Map) {
+          final evento = Map<String, dynamic>.from(value);
+          final timestamp = _parseToInt(evento['timestamp']);
+          
+          eventos.add({
+            'id': key.toString(),
+            'data': DateTime.fromMillisecondsSinceEpoch(timestamp).toIso8601String(),
+            'dispositivo': _parseToString(evento['dispositivoId']),
+            'estado': _parseToString(evento['estado']),
+            'numeroRele': _parseToInt(evento['numeroRele']),
+            'origem': _parseToString(evento['origem']),
+            'pinoEntrada': _parseToInt(evento['pinoEntrada']),
+            'timestamp': timestamp,
+          });
+        }
+      });
+      
+      // Ordenar por timestamp (mais recente primeiro)
+      eventos.sort((a, b) => (b['timestamp'] ?? 0).compareTo(a['timestamp'] ?? 0));
+      
+      return eventos;
+      
     } catch (e) {
       print('Erro ao buscar eventos por dispositivo: $e');
+      return [];
+    }
+  }
+
+  // ============================================================================
+  // BUSCAR LISTA DE DISPOSITIVOS ÚNICOS
+  // ============================================================================
+  
+  static Future<List<String>> buscarDispositivos() async {
+    try {
+      final DatabaseEvent event = await _eventosRef.once();
+      
+      if (!event.snapshot.exists) {
+        return [];
+      }
+      
+      final Map<dynamic, dynamic> eventosData = event.snapshot.value as Map<dynamic, dynamic>;
+      final Set<String> dispositivos = {};
+      
+      eventosData.forEach((key, value) {
+        if (value is Map) {
+          final evento = Map<String, dynamic>.from(value);
+          final dispositivo = _parseToString(evento['dispositivoId']);
+          if (dispositivo.isNotEmpty && dispositivo != 'N/A') {
+            dispositivos.add(dispositivo);
+          }
+        }
+      });
+      
+      final lista = dispositivos.toList();
+      lista.sort();
+      return lista;
+      
+    } catch (e) {
+      print('Erro ao buscar dispositivos: $e');
       return [];
     }
   }

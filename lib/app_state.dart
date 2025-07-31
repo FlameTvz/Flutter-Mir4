@@ -1,8 +1,10 @@
+// ignore_for_file: unused_import, unused_element
+
 import 'package:flutter/material.dart';
-import '/backend/backend.dart';
-import '/backend/api_requests/api_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'flutter_flow/flutter_flow_util.dart';
+// ignore: duplicate_ignore
+// ignore: unused_import
 import 'dart:convert';
 
 class FFAppState extends ChangeNotifier {
@@ -90,8 +92,8 @@ class FFAppState extends ChangeNotifier {
     _safeInit(() {
       _saida5 = prefs.getInt('ff_saida5') ?? _saida5;
     });
+    
   }
-
   void update(VoidCallback callback) {
     callback();
     notifyListeners();
@@ -428,35 +430,35 @@ class FFAppState extends ChangeNotifier {
     _listaEntrada = value;
   }
 
-  String _nomeEntrada1 = '';
+  String _nomeEntrada1 = 'Entrada 1';
   String get nomeEntrada1 => _nomeEntrada1;
   set nomeEntrada1(String value) {
     _nomeEntrada1 = value;
     prefs.setString('ff_nomeEntrada1', value);
   }
 
-  String _nomeEntrada2 = '';
+  String _nomeEntrada2 = 'Entrada 2';
   String get nomeEntrada2 => _nomeEntrada2;
   set nomeEntrada2(String value) {
     _nomeEntrada2 = value;
     prefs.setString('ff_nomeEntrada2', value);
   }
 
-  String _nomeEntrada3 = '';
+  String _nomeEntrada3 = 'Entrada 3';
   String get nomeEntrada3 => _nomeEntrada3;
   set nomeEntrada3(String value) {
     _nomeEntrada3 = value;
     prefs.setString('ff_nomeEntrada3', value);
   }
 
-  String _nomeEntrada4 = '';
+  String _nomeEntrada4 = 'Entrada 4';
   String get nomeEntrada4 => _nomeEntrada4;
   set nomeEntrada4(String value) {
     _nomeEntrada4 = value;
     prefs.setString('ff_nomeEntrada4', value);
   }
 
-  String _nomeEntrada5 = '';
+  String _nomeEntrada5 = 'Entrada 5';
   String get nomeEntrada5 => _nomeEntrada5;
   set nomeEntrada5(String value) {
     _nomeEntrada5 = value;
@@ -715,6 +717,12 @@ class FFAppState extends ChangeNotifier {
 
   String _tokenfcm = '';
   String get tokenfcm => _tokenfcm;
+
+  get saidaEntrada1_3 => null;
+
+  get modoOperacaoEntrada1 => null;
+
+  get saidaEntrada2_5 => null;
   set tokenfcm(String value) {
     _tokenfcm = value;
   }

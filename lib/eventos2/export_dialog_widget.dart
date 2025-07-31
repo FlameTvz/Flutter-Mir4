@@ -1,13 +1,17 @@
 // ============================================================================
-// ARQUIVO: lib/eventos2/export_dialog_widget.dart - VERSÃO FINAL CORRIGIDA
+// ARQUIVO: lib/eventos2/export_dialog_widget.dart - FIREBASE REALTIME DATABASE
 // ============================================================================
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'export_eventos_service.dart';
 
 class ExportDialogWidget extends StatefulWidget {
-  const ExportDialogWidget({Key? key}) : super(key: key);
+  // ============================================================================
+  // 🔧 ADICIONAR PARÂMETRO PARA ESP ID
+  // ============================================================================
+  final String? espId; // ID do ESP específico
+  
+  const ExportDialogWidget({Key? key, this.espId}) : super(key: key);
 
   @override
   _ExportDialogWidgetState createState() => _ExportDialogWidgetState();
@@ -22,11 +26,20 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
   @override
   void initState() {
     super.initState();
-    _carregarDispositivos();
+    // ============================================================================
+    // 🔧 SE ESP ID ESTIVER DEFINIDO, NÃO CARREGAR LISTA DE DISPOSITIVOS
+    // ============================================================================
+    if (widget.espId == null) {
+      _carregarDispositivos();
+    } else {
+      // ESP específico já definido
+      _listaDispositivos = [widget.espId!];
+      _dispositivoSelecionado = widget.espId;
+    }
   }
 
   // ============================================================================
-  // FUNÇÃO PARA CARREGAR DISPOSITIVOS DO FIRESTORE
+  // FUNÇÃO PARA CARREGAR DISPOSITIVOS DO REALTIME DATABASE
   // ============================================================================
   
   Future<void> _carregarDispositivos() async {
@@ -35,22 +48,10 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
     });
     
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('eventos')
-          .get();
-      
-      // Extrair lista única de dispositivoId
-      final Set<String> dispositivosUnicos = {};
-      
-      for (var doc in snapshot.docs) {
-        final data = doc.data();
-        if (data['dispositivoId'] != null && data['dispositivoId'].toString().isNotEmpty) {
-          dispositivosUnicos.add(data['dispositivoId'].toString());
-        }
-      }
+      final dispositivos = await ExportEventosService.buscarDispositivos();
       
       setState(() {
-        _listaDispositivos = dispositivosUnicos.toList()..sort();
+        _listaDispositivos = dispositivos;
         _carregandoDispositivos = false;
       });
       
@@ -61,14 +62,47 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar dispositivos: $e')),
+          SnackBar(
+            content: Text('Erro ao carregar dispositivos: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
   }
 
   // ============================================================================
-  // FUNÇÕES DE EXPORTAÇÃO CORRIGIDAS
+  // 🔧 FUNÇÃO PARA EXPORTAR ESP ESPECÍFICO
+  // ============================================================================
+  
+  Future<void> _exportarEspEspecifico(String formato) async {
+    try {
+      _mostrarLoading('Exportando eventos do ESP ${widget.espId}...');
+      
+      await ExportEventosService.exportarEventosPorDispositivo(
+        widget.espId!,
+        formato: formato,
+      );
+      
+      if (mounted) {
+        Navigator.pop(context); // Fechar loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eventos do ESP ${widget.espId} exportados com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Fechar loading
+        _mostrarErro('Erro ao exportar ESP ${widget.espId}: $e');
+      }
+    }
+  }
+
+  // ============================================================================
+  // FUNÇÕES DE EXPORTAÇÃO EXISTENTES
   // ============================================================================
   
   // Exportar todos os eventos para JSON
@@ -248,6 +282,32 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Info sobre fonte de dados
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      widget.espId != null 
+                          ? 'Fonte: Firebase Realtime Database\nCaminho: MIR/eventos\nESP: ${widget.espId}'
+                          : 'Fonte: Firebase Realtime Database\nCaminho: MIR/eventos',
+                      style: TextStyle(fontSize: 12, color: Colors.blue[800]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            SizedBox(height: 16),
+            
             // Seleção de formato
             Text(
               'Formato de Exportação:',
@@ -290,58 +350,60 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
             
             SizedBox(height: 20),
             
-            // Seleção de dispositivo
-            Text(
-              'Dispositivo (para exportação específica):',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            SizedBox(height: 8),
-            
-            _carregandoDispositivos 
-              ? Container(
-                  padding: EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      SizedBox(width: 12),
-                      Text('Carregando dispositivos...'),
-                    ],
-                  ),
-                )
-              : Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: DropdownButton<String>(
-                    value: _dispositivoSelecionado,
-                    hint: Text('Selecione um dispositivo'),
-                    isExpanded: true,
-                    underline: SizedBox(),
-                    items: _listaDispositivos.map((dispositivo) {
-                      return DropdownMenuItem<String>(
-                        value: dispositivo,
-                        child: Text(dispositivo),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _dispositivoSelecionado = value;
-                      });
-                    },
-                  ),
-                ),
-            
-            SizedBox(height: 24),
+            // // Seleção de dispositivo - só mostrar se não for ESP específico
+            // if (widget.espId == null) ...[
+            //   Text(
+            //     'Dispositivo (para exportação específica):',
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 16,
+            //     ),
+            //   ),
+            //   SizedBox(height: 8),
+              
+            //   _carregandoDispositivos 
+            //     ? Container(
+            //         padding: EdgeInsets.all(16),
+            //         child: Row(
+            //           children: [
+            //             SizedBox(
+            //               width: 20,
+            //               height: 20,
+            //               child: CircularProgressIndicator(strokeWidth: 2),
+            //             ),
+            //             SizedBox(width: 12),
+            //             Text('Carregando dispositivos...'),
+            //           ],
+            //         ),
+            //       )
+            //     : Container(
+            //         width: double.infinity,
+            //         padding: EdgeInsets.symmetric(horizontal: 12),
+            //         decoration: BoxDecoration(
+            //           border: Border.all(color: Colors.grey),
+            //           borderRadius: BorderRadius.circular(4),
+            //         ),
+            //         child: DropdownButton<String>(
+            //           value: _dispositivoSelecionado,
+            //           hint: Text('Selecione um dispositivo'),
+            //           isExpanded: true,
+            //           underline: SizedBox(),
+            //           items: _listaDispositivos.map((dispositivo) {
+            //             return DropdownMenuItem<String>(
+            //               value: dispositivo,
+            //               child: Text(dispositivo),
+            //             );
+            //           }).toList(),
+            //           onChanged: (value) {
+            //             setState(() {
+            //               _dispositivoSelecionado = value;
+            //             });
+            //           },
+            //         ),
+            //       ),
+              
+            //   SizedBox(height: 24),
+            // ],
             
             // Botões de ação
             Text(
@@ -356,52 +418,91 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton.icon(
-                  onPressed: _exportarTodosJSON,
-                  icon: Icon(Icons.code),
-                  label: Text('Exportar Todos (JSON)'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                // ============================================================================
+                // 🔧 BOTÕES ESPECÍFICOS PARA ESP OU GERAIS
+                // ============================================================================
+                if (widget.espId != null) ...[
+                  // Botões para ESP específico
+                  ElevatedButton.icon(
+                    onPressed: () => _exportarEspEspecifico('json'),
+                    icon: Icon(Icons.code),
+                    label: Text('Exportar ESP ${widget.espId} (JSON)'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                ),
-                
-                SizedBox(height: 8),
-                
-                ElevatedButton.icon(
-                  onPressed: _exportarTodosCSV,
-                  icon: Icon(Icons.table_chart),
-                  label: Text('Exportar Todos (CSV)'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                  
+                  SizedBox(height: 8),
+                  
+                  ElevatedButton.icon(
+                    onPressed: () => _exportarEspEspecifico('csv'),
+                    icon: Icon(Icons.table_chart),
+                    label: Text('Exportar ESP ${widget.espId} (CSV)'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                ),
-                
-                SizedBox(height: 8),
-                
-                ElevatedButton.icon(
-                  onPressed: _exportarPorPeriodo,
-                  icon: Icon(Icons.date_range),
-                  label: Text('Exportar Últimos 30 Dias ($_formatoSelecionado)'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                ] else ...[
+                  // Botões gerais (todos os eventos)
+                  ElevatedButton.icon(
+                    onPressed: _exportarTodosJSON,
+                    icon: Icon(Icons.code),
+                    label: Text('Exportar Todos (JSON)'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                ),
-                
-                SizedBox(height: 8),
-                
-                ElevatedButton.icon(
-                  onPressed: (_listaDispositivos.isEmpty || _dispositivoSelecionado == null) 
-                    ? null 
-                    : _exportarPorDispositivo,
-                  icon: Icon(Icons.devices),
-                  label: Text(_dispositivoSelecionado != null 
-                    ? 'Exportar $_dispositivoSelecionado ($_formatoSelecionado)'
-                    : 'Selecione um Dispositivo'
+                  
+                  SizedBox(height: 8),
+                  
+                  ElevatedButton.icon(
+                    onPressed: _exportarTodosCSV,
+                    icon: Icon(Icons.table_chart),
+                    label: Text('Exportar Todos (CSV)'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                  
+                  SizedBox(height: 8),
+                  
+                  ElevatedButton.icon(
+                    onPressed: _exportarPorPeriodo,
+                    icon: Icon(Icons.date_range),
+                    label: Text('Exportar Últimos 30 Dias ($_formatoSelecionado)'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                ),
+                  
+                  SizedBox(height: 8),
+                  
+                  ElevatedButton.icon(
+                    onPressed: (_listaDispositivos.isEmpty || _dispositivoSelecionado == null) 
+                      ? null 
+                      : _exportarPorDispositivo,
+                    icon: Icon(Icons.devices),
+                    label: Text(_dispositivoSelecionado != null 
+                      ? 'Exportar $_dispositivoSelecionado ($_formatoSelecionado)'
+                      : 'Selecione um Dispositivo'
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
               ],
             ),
             
@@ -420,8 +521,31 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Nenhum dispositivo encontrado na base de dados.',
+                        'Nenhum dispositivo encontrado no Realtime Database.\nCaminho: MIR/Eventos',
                         style: TextStyle(color: Colors.orange.shade800),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+            if (_listaDispositivos.isNotEmpty)
+              Container(
+                margin: EdgeInsets.only(top: 16),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  border: Border.all(color: Colors.green),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${_listaDispositivos.length} dispositivo(s) encontrado(s)',
+                        style: TextStyle(color: Colors.green.shade800),
                       ),
                     ),
                   ],
@@ -435,11 +559,17 @@ class _ExportDialogWidgetState extends State<ExportDialogWidget> {
           onPressed: () => Navigator.pop(context),
           child: Text('Fechar'),
         ),
-        if (_listaDispositivos.isNotEmpty)
-          TextButton(
-            onPressed: _carregarDispositivos,
-            child: Text('Atualizar Dispositivos'),
+        TextButton(
+          onPressed: _carregarDispositivos,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.refresh, size: 16),
+              SizedBox(width: 4),
+              Text('Atualizar'),
+            ],
           ),
+        ),
       ],
     );
   }

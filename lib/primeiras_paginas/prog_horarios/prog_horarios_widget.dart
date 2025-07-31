@@ -11,7 +11,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'prog_horarios_model.dart';
 export 'prog_horarios_model.dart';
-
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
 /// Preciso de uma tela de seleção de agendamentos.
 ///
 /// Devem aparecer 7 botões em uma linha, um para cada dia da semana onde o

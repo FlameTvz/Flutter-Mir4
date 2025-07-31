@@ -6707,3 +6707,297 @@ String? escapeStringForJson(String? input) {
       .replaceAll('\n', '\\n')
       .replaceAll('\t', '\\t');
 }
+
+
+class ControlesGroup {
+  static String getBaseUrl({
+    String? idesp = '',
+    String? token = '',
+  }) =>
+      'https://poised-bot-443613-p6-default-rtdb.firebaseio.com/MIR/ESPS/${idesp}/Controles';
+  static Map<String, String> headers = {};
+
+  static ModoAprendizadoCall modoAprendizadoCall = ModoAprendizadoCall();
+  static PegarControlesCall pegarControlesCall = PegarControlesCall();
+  static DeletarControleCall deletarControleCall = DeletarControleCall();
+  static GetControlesCall getControlesCall = GetControlesCall();
+  static AddControleCall addControleCall = AddControleCall();
+}
+
+ class DeletarControleCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? idcontrole = '',
+    String? token = '',
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+    return ApiManager.instance.makeApiCall(
+      callName: 'deletarControle',
+      apiUrl: '${baseUrl}/${idcontrole}.json?auth=${token}',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class ModoAprendizadoCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+
+    final ffApiRequestBody = '''
+{
+  "modoAprendizado": true
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'modoAprendizado',
+      apiUrl: '${baseUrl}/modoAprendizado.json?auth=${token}',
+      callType: ApiCallType.PUT,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class PegarControlesCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+
+    return ApiManager.instance.makeApiCall(
+      callName: 'pegarControles',
+      apiUrl: '${baseUrl}.json?auth=${token}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class AdicionarControleCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+    String? idcontrole = '',
+    String? index,
+    String? serial,
+    String? nome,
+    String? apartamento,
+    String? placa,
+    String? bateria,
+    bool? clonagem,
+    int? id,
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+    // Corpo do JSON foi simplificado para remover os campos desnecessários
+    final ffApiRequestBody = '''
+{
+  "index": "${escapeStringForJson(index)}",
+  "serial": "${escapeStringForJson(serial)}",
+  "nome": "${escapeStringForJson(nome)}",
+  "apartamento": "${escapeStringForJson(apartamento)}",
+  "placa": "${escapeStringForJson(placa)}",
+  "bateria": "${escapeStringForJson(bateria)}",
+  "clonagem": $clonagem,
+  "id": $id
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'adicionarControle',
+      apiUrl: '${baseUrl}/controle_${idcontrole}.json?auth=${token}',
+      callType: ApiCallType.PUT,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class GetControlesCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+
+    return ApiManager.instance.makeApiCall(
+      callName: 'getControles',
+      apiUrl: '${baseUrl}.json?auth=${token}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class AddControleCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+    int? idcontrole,
+    String? serial,
+    bool? bateria,
+    bool? clonagem,
+    String? nome,
+    String? placa,
+    String? apto,
+  }) async {
+    final baseUrl = ControlesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+
+    final ffApiRequestBody = '''
+    {
+      "bateria": ${bateria},
+      "clonagem": ${clonagem},
+      "id": ${idcontrole},
+      "serial": "${escapeStringForJson(serial)}",
+      "nome": "${escapeStringForJson(nome)}",
+      "placa": "${escapeStringForJson(placa)}",
+      "apto": "${escapeStringForJson(apto)}"
+    }
+    ''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'addControle',
+      apiUrl: '${baseUrl}/controle_${idcontrole}.json?auth=${token}',
+      callType: ApiCallType.PATCH,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class NotificacoesGroup {
+  static String getBaseUrl({
+    String? idesp = '',
+    String? token = '',
+  }) =>
+      'https://poised-bot-443613-p6-default-rtdb.firebaseio.com/MIR/ESPS/${idesp}/notificacao';
+  static Map<String, String> headers = {};
+  
+  // Instância da nova chamada adicionada ao grupo
+  static PegarNotificacoesCall pegarNotificacoesCall = PegarNotificacoesCall();
+
+  static AtualizarNotificacaoCall atualizarNotificacaoCall =
+      AtualizarNotificacaoCall();
+}
+
+// Nova classe para buscar as configurações de notificação
+class PegarNotificacoesCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+  }) async {
+    final baseUrl = NotificacoesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+    return ApiManager.instance.makeApiCall(
+      callName: 'pegarNotificacoes',
+      apiUrl: '${baseUrl}.json?auth=${token}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class AtualizarNotificacaoCall {
+  Future<ApiCallResponse> call({
+    String? idesp = '',
+    String? token = '',
+    String? notificacaoKey = '',
+    bool? status,
+  }) async {
+    final baseUrl = NotificacoesGroup.getBaseUrl(
+      idesp: idesp,
+      token: token,
+    );
+    final ffApiRequestBody = '''
+{
+  "${escapeStringForJson(notificacaoKey)}": ${status}
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'atualizarNotificacao',
+      apiUrl: '${baseUrl}.json?auth=${token}',
+      callType: ApiCallType.PATCH,
+      headers: {},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}

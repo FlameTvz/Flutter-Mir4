@@ -11,6 +11,8 @@ import 'saidas_widget.dart' show SaidasWidget;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
 
 class SaidasModel extends FlutterFlowModel<SaidasWidget> {
   ///  State fields for stateful widgets in this page.

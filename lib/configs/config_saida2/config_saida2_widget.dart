@@ -271,7 +271,7 @@ class _ConfigSaida2WidgetState extends State<ConfigSaida2Widget> {
                                     child: FFButtonWidget(
                                       onPressed: () async {
                                         FFAppState().isReleOn1 =
-                                            !(FFAppState().isReleOn1 ?? true);
+                                            !(FFAppState().isReleOn1);
                                         FFAppState().qualRele = 1;
                                         safeSetState(() {});
                                         if (FFAppState().isReleOn1 == true) {

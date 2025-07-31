@@ -57,6 +57,7 @@ class ConfigEntradaModel extends FlutterFlowModel<ConfigEntradaWidget> {
   TextEditingController? textController5;
   String? Function(BuildContext, String?)? textController5Validator;
 
+
   @override
   void initState(BuildContext context) {
     voltarModel = createModel(context, () => VoltarModel());

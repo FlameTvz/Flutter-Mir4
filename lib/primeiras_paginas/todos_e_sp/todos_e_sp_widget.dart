@@ -1,6 +1,7 @@
 import 'package:mir4/primeiras_paginas/addesp/addesp_widget.dart';
 import 'package:mir4/primeiras_paginas/home_page/home_page_widget.dart';
-
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';

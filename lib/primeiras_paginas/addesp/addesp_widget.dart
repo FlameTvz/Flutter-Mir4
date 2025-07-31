@@ -13,7 +13,10 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:provider/provider.dart';
 import 'addesp_model.dart';
 export 'addesp_model.dart';
-
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: prefer_const_literals_to_create_immutables
 class AddespWidget extends StatefulWidget {
   const AddespWidget({super.key});
 

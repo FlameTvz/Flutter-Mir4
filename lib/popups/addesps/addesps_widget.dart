@@ -12,7 +12,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'addesps_model.dart';
 export 'addesps_model.dart';
-
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
+// ignore_for_file: prefer_const_literals_to_create_immutables
 /// preciso de um campo que de tenha um textfield do nome do esp um campo que
 /// vai aparecer um texto que vai ser o id do esp um botao para ler o qr code
 /// outro botao de cancelar  e outro botao de adicionar o esp

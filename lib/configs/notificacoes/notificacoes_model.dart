@@ -14,6 +14,11 @@ import 'package:provider/provider.dart';
 class NotificacoesModel extends FlutterFlowModel<NotificacoesWidget> {
   ///  State fields for stateful widgets in this page.
 
+  ApiCallResponse? apiResultNotificacoes;
+  // Stores the notification settings from the API
+  dynamic notificacaoConfig;
+
+
   // Stores action output result for [Backend Call - API (pegar Entradas)] action in Notificacoes widget.
   ApiCallResponse? pegar;
   // State field(s) for Switch widget.

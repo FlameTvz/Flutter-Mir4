@@ -163,9 +163,9 @@ class _ConfigSaida1WidgetState extends State<ConfigSaida1Widget> {
                                   options: FFButtonOptions(
                                     width: double.infinity,
                                     height: 41.29,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         16.0, 0.0, 16.0, 0.0),
-                                    iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                    iconPadding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 0.0, 0.0),
                                     color: FlutterFlowTheme.of(context).primary,
                                     textStyle: FlutterFlowTheme.of(context)
@@ -278,12 +278,12 @@ class _ConfigSaida1WidgetState extends State<ConfigSaida1Widget> {
                                 Align(
                                   alignment: AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         16.0, 0.0, 16.0, 0.0),
                                     child: FFButtonWidget(
                                       onPressed: () async {
                                         FFAppState().isReleOn1 =
-                                            !(FFAppState().isReleOn1 ?? true);
+                                            !(FFAppState().isReleOn1);
                                         FFAppState().qualRele = 1;
                                         safeSetState(() {});
                                         if (FFAppState().isReleOn1 == true) {

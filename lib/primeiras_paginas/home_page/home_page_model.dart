@@ -17,3 +17,6 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   @override
   void dispose() {}
 }
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: unused_import
+// ignore_for_file: unnecessary_import
